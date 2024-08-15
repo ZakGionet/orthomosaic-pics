@@ -1,0 +1,129 @@
+.sidebar--active--layers--tab,
+.sidebar--all--layers--tab {
+    display: block;
+    transition: transform 0.3s;
+    transform: translateX(0);
+}
+
+.hidden-sidebar {
+    transition: transform 0.3s;
+    transform: translateX(100%);
+    display: none;
+}
+.sidebar {
+    height: 100%;
+    width: 100%;
+    background-color: #B7B7A2;
+}
+  .sidebar--header--container {
+    display: flex;
+    align-items: center;
+    height: 3rem;
+    background-color: #c8c8b7;
+    box-shadow: 0px 5px 6px -6px #9b9b7d;
+  }
+    .sidebar--header--button--container {
+      height: 3rem;
+      width: 3rem;
+      background-color: inherit;
+    }
+      .sidebar--header--button--all--layers,
+      .sidebar--header--button--active--layers {
+        height: 100%;
+        width: 100%;
+        background-color: inherit;
+        transition: filter 0.4s;
+      }
+        .sidebar--header--button--all--layers:hover,
+        .sidebar--header--button--active--layers:hover {
+          filter: brightness(92%);
+          cursor: pointer;
+        }
+        .sidebar--header--directory--icon,
+        .sidebar--header--view--icon {
+          height: 1.8rem;
+          color: black;
+        }
+
+  .sidebar--all--layers--tab, 
+  .sidebar--active--layers--tab {
+    margin-top: 1rem;
+    margin-left: 0.5rem;
+  }
+    .sidebar--layer,
+    .sidebar--active--layer {
+      color: black;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      margin-right: 1rem;
+      margin-top: 0.3rem;
+      transition: filter 0.4s;
+    }
+      .sidebar--layer:hover,
+      .sidebar--active--layer:hover {
+        filter: brightness(94%);
+      }
+
+.sidebar--layer--top {
+
+  padding-left: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3.5rem;
+
+  background-color: #B7B7A2;
+}
+.sidebar--layer--left {
+  display: flex;
+  align-items: center;
+}
+.file-icon {
+  flex-shrink: 0;
+  height: 1.5rem;
+  margin-right: 0.6rem;
+ 
+}
+.sidebar--icons {
+  display: flex;
+  flex-shrink: 0;
+  background-color: inherit;
+
+}
+.sidebar--icons > button {
+  margin: 0 0.2rem 0 0.2rem;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  height: 2rem;
+  width: 2rem;
+  background-color: inherit;
+  border: none;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+.sidebar--icons > button:hover {
+  filter: brightness(92%);
+}
+.sidebar--layer--icon {
+  height: 1.5rem;
+}
+.sidebar--layer--info--icon,
+.sidebar--layer--view--icon {
+  height: 1.5rem;
+}
+  .sidebar--layer--view--icon {
+    opacity: 50%;
+  }
+  .sidebar--layer--view--icon--active {
+    height: 1.5rem;
+  }
+
+.sidebar--layer--bottom {
+  height: 5rem;
+  background-color: gray;
+  padding-top: 1rem;
+}
