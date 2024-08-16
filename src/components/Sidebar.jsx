@@ -30,7 +30,12 @@ export default function Sidebar({layers,
                 newLayers = prevLayers.filter(value => value.id !== layerId)
             }
             else {
-                newLayers.push(layers[layerId])
+                for (let layer of layers) {
+                    if (layer.id == layerId) {
+                        newLayers.push(layer)
+                        break
+                    }
+                }
             }
             return newLayers
         })

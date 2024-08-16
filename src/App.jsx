@@ -8,10 +8,12 @@ import "./MapComponent.css"
 import "./App.css"
 import Sidebar from './components/Sidebar';
 import database from './database';
-import layerArr from "./json_layer"
+// import layerArr from "./json_layer"
 import GeoJSON from 'ol/format/GeoJSON';
 import SidebarButton from './components/SidebarButton';
-
+import getLayers from './apis/getLayers.js'
+import fetchLayerInfo from './apis/getLayers.js';
+import layerInfoMatchIds from './helpers/layerInfoMatchIds.js';
 export default function App() {
 
     const [layersInfoOpened, setlayersInfoOpened] = useState([])
@@ -19,9 +21,21 @@ export default function App() {
     const [activeLayers, setActiveLayers] = useState([])
     const [activeGeoJson, setActiveGeoJson] = useState([])
     const [currentTab, setCurrentTab] = useState("allLayers")
-    const [layers, setLayers] = useState(layerArr["layers"])
+    const [layers, setLayers] = useState(null)
 
-
+    useEffect(() => {
+        const handleFetchLayerInfo = async () => {
+            const layerInfo = await fetchLayerInfo()
+            const newIdLayerInfo = layerInfoMatchIds(layerInfo, 'l_id', 'id')
+            setLayers(newIdLayerInfo)
+        }
+        handleFetchLayerInfo()
+    }, [])
+    useEffect(() => {
+        console.log("layers::")
+        console.log(layers)
+    }, [layers])
+    
     return (
         <main>
 
