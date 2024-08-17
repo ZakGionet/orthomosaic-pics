@@ -5,7 +5,9 @@ import webGLTileLayer from 'ol/layer/WebGLTile.js'
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoTIFF } from 'ol/source';
+import TileSource from 'ol/source/Tile';
 
+import XYZ from 'ol/source/XYZ';
 import GeoJSON from "ol/format/GeoJSON.js";
 import View from 'ol/View.js';
 import { useEffect, useState, useRef } from "react"
@@ -19,14 +21,21 @@ import {register} from 'ol/proj/proj4.js';
 import Zoom from 'ol/control/Zoom.js'
 import ScaleLine from 'ol/control/ScaleLine'
 import ZoomToExtent from 'ol/control/ZoomToExtent.js'
+import fetchXYZTiles from '../apis/getTiles';
+import fetchMetadata from '../apis/fetchMetadata';
+import { transformExtent } from 'ol/proj';
+import LayerGroup from 'ol/layer/Group';
+import { Tile } from 'ol';
+import getExtent from '../apis/getExtent';
 
-export default function MapComponent({ activeLayers }) {
+const MapComponent = ({ activeLayers }) => {
 
     console.log('re-rendering')
     console.log(activeLayers)
     const mapRef = useRef(null)
     const [mapState, setMapState] = useState(null)
     const [prevActiveLayers, setPrevActiveLayers] = useState(activeLayers)
+    const setViewRef = useRef(null)
 
 
     /* Creates Map instance after component is mounted */
@@ -54,8 +63,8 @@ export default function MapComponent({ activeLayers }) {
             target: mapRef.current,
             layers: [osmLayer],
             view: new View({
-                center: [438189.3, 5965517.69],
-                zoom: 10,
+                center: [-8019943, 5637190],
+                zoom: 22,
             })
         })
         console.log(`mapInstance.projection: ${mapInstance.getView().getProjection().getCode()}`)
@@ -69,6 +78,7 @@ export default function MapComponent({ activeLayers }) {
         const scaleLine = new ScaleLine()
         mapInstance.addControl(scaleLine)
 
+  
         const zoomToExtent = new ZoomToExtent({
             label: "no work:("
         })
@@ -80,6 +90,44 @@ export default function MapComponent({ activeLayers }) {
         }
 
     }, [])
+
+    // Helper function to export view functions
+    setViewRef.current = (extent) => {
+        if (mapState) {
+            mapState.setView(new View({
+                extent: extent
+            }))
+        }
+    }
+
+
+    // Helper functions for handling layers
+    
+    const buildTileLayer = (extentMeters) => {
+        const layerGroup = new LayerGroup({
+            layers: [
+                new TileLayer({
+                    name: activeLayersChange.name,
+                    extent: extentMeters,
+                    source: new XYZ({
+                        minZoom: 0,
+                        maxZoom: 21,
+                        url: `http://localhost:8000/api/raster/${activeLayersChange.name}/{z}/{x}/{-y}.png`,
+                        tileSize: [256, 256]
+                    })
+                })
+            ]
+        })
+        console.log('layer group debugging:')
+        layerGroup.setVisible(true)
+        layerGroup.setZIndex(activeLayers.length)
+        mapState.addLayer(layerGroup)
+        
+    }
+    const handleTileBuild = async (layerName) => {
+        const extentMeters = await getExtent(layerName)
+        buildTileLayer(extentMeters)
+    }
 
     useEffect(() => {
         /* Make sure map is properly mounted, not sure why we're doing this */
@@ -245,7 +293,47 @@ export default function MapComponent({ activeLayers }) {
                     geoTIFFLayer.setZIndex(activeLayers.length)
                     mapState.addLayer(geoTIFFLayer)
                 }
-                
+                else if (activeLayersChange.type === 'raster') {
+                    // const getExtent = async (layerName) => {
+                    //     const response = await fetchMetadata(layerName)
+                    //     const minX = response.min_x
+                    //     const maxX = response.max_x
+                    //     const minY = response.min_y
+                    //     const maxY = response.max_y
+
+                    //     const extentDegrees = [minX, minY, maxX, maxY]
+                    //     const extentMeters = transformExtent(extentDegrees, 'EPSG:4326', 'EPSG:3857')
+                    //     return extentMeters
+                    // }
+                    // const buildTileLayer = (extentMeters) => {
+                    //     const layerGroup = new LayerGroup({
+                    //         layers: [
+                    //             new TileLayer({
+                    //                 name: activeLayersChange.name,
+                    //                 extent: extentMeters,
+                    //                 source: new XYZ({
+                    //                     minZoom: 0,
+                    //                     maxZoom: 21,
+                    //                     url: `http://localhost:8000/api/raster/${activeLayersChange.name}/{z}/{x}/{-y}.png`,
+                    //                     tileSize: [256, 256]
+                    //                 })
+                    //             })
+                    //         ]
+                    //     })
+                    //     console.log('layer group debugging:')
+                    //     layerGroup.setVisible(true)
+                    //     layerGroup.setZIndex(activeLayers.length)
+                    //     mapState.addLayer(layerGroup)
+                        
+                    // }
+                    // const handleTileBuild = async (layerName) => {
+                    //     const extentMeters = await getExtent(layerName)
+                    //     buildTileLayer(extentMeters)
+                    // }
+                    handleTileBuild(activeLayersChange.name)
+                    console.log('success running buildTileLayer')
+                    // buildTileLayer(activeLayersChange.name)
+                }
             }
         }
         setPrevActiveLayers(activeLayers)
@@ -257,3 +345,5 @@ export default function MapComponent({ activeLayers }) {
         <div ref={mapRef} className='map'></div>
     )
 }
+
+export default MapComponent
