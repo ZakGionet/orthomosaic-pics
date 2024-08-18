@@ -2,7 +2,7 @@ import fileIcon from "../assets/file-icon.svg"
 import viewIcon from "../assets/view-icon.svg"
 import infoIcon from "../assets/info-icon.svg"
 import "../Sidebar.css"
-import handleZoomToExtent from "../helpers/handleZoomToExtent"
+// import handleZoomToExtent from "../helpers/handleZoomToExtent"
 
 export default function LayerTab({
     id, name, info, infoOpened, toggleLayers, active, updateActiveLayers}) {

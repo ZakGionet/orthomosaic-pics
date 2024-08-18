@@ -36,7 +36,7 @@ const MapComponent = ({ activeLayers }) => {
     const [mapState, setMapState] = useState(null)
     const [prevActiveLayers, setPrevActiveLayers] = useState(activeLayers)
     const setViewRef = useRef(null)
-
+    const [layerExtents, setLayerExtents] = useState(null)
 
     /* Creates Map instance after component is mounted */
     useEffect(() => {
@@ -101,7 +101,7 @@ const MapComponent = ({ activeLayers }) => {
     }
 
 
-    // Helper functions for handling layers
+    // Helper functions for handling tile layers layers
     
     const buildTileLayer = (extentMeters) => {
         const layerGroup = new LayerGroup({
@@ -128,6 +128,36 @@ const MapComponent = ({ activeLayers }) => {
         const extentMeters = await getExtent(layerName)
         buildTileLayer(extentMeters)
     }
+
+    const handleGeoJSONLayer = async(activeLayersChange) => {
+        let parsedName = activeLayersChange.name.toLowerCase()
+        parsedName = parsedName.replace(' ', '_')
+        parsedName = parsedName.replace('-', '_')
+        const fileResponse = await fetch(`http://localhost:8000/api/geojson/${parsedName}`);
+        console.log(fileResponse)
+        const geoJson = await fileResponse.json();
+        console.log(geoJson)
+        console.log(geoJson['json_build_object'])
+
+        const vectorSource = new VectorSource({
+            features: new GeoJSON().readFeatures(geoJson['json_build_object'])
+        })
+        const vectorLayer = new VectorLayer({
+            source: vectorSource,
+            name: activeLayersChange.name,
+            style: new Style({
+                fill: new Fill({
+                    color: activeLayersChange.fill
+                }),
+                stroke: new Stroke({
+                    color: activeLayersChange.stroke
+                })
+            }),
+        })
+        vectorLayer.setZIndex(activeLayers.length)
+        mapState.addLayer(vectorLayer)
+    }
+
 
     useEffect(() => {
         /* Make sure map is properly mounted, not sure why we're doing this */
@@ -250,30 +280,9 @@ const MapComponent = ({ activeLayers }) => {
             else {
                 console.log('adding layer...')
                 if (activeLayersChange.type === "geojson") {
-                    const fetchGeojsonLayer = async() => {
-                        const fileResponse = await fetch(`./${activeLayersChange.url}`);
-                        console.log(fileResponse)
-                        const geoJson = await fileResponse.json();
-
-                        const vectorSource = new VectorSource({
-                            features: new GeoJSON().readFeatures(geoJson)
-                        })
-                        const vectorLayer = new VectorLayer({
-                            source: vectorSource,
-                            name: activeLayersChange.name,
-                            style: new Style({
-                                fill: new Fill({
-                                    color: activeLayersChange.fill
-                                }),
-                                stroke: new Stroke({
-                                    color: activeLayersChange.stroke
-                                })
-                            }),
-                        })
-                        vectorLayer.setZIndex(activeLayers.length)
-                        mapState.addLayer(vectorLayer)
-                    }
-                    fetchGeojsonLayer()
+                    console.log('adding geojson')
+                    console.log(activeLayersChange.name)
+                    handleGeoJSONLayer(activeLayersChange.name)
                 }
                 else if (activeLayersChange.type === "geotiff") {
                     const geoTIFFSource = new GeoTIFF({
