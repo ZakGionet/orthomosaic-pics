@@ -3,7 +3,7 @@ import "../Sidebar.css"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
-export default function ActiveSidebarTab({activeLayers, updateActiveLayers, rearrangeActiveLayers }) {
+export default function ActiveSidebarTab({activeLayers, updateActiveLayers, rearrangeActiveLayers, handleSetIsQueried }) {
 
     const activeLayersMap = activeLayers.map((activeLayer, i) => {
         console.log(activeLayer.name)
@@ -15,6 +15,7 @@ export default function ActiveSidebarTab({activeLayers, updateActiveLayers, rear
                 name={activeLayer.name}
                 updateActiveLayers={updateActiveLayers}
                 rearrangeActiveLayers={rearrangeActiveLayers}
+                handleSetIsQueried={handleSetIsQueried}
             />
         )
     })

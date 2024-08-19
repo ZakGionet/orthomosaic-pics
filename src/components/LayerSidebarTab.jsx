@@ -2,7 +2,7 @@ import LayerTab from "./LayerTab"
 import "../Sidebar.css"
 
 export default function LayerSidebarTab({
-    layers, layersInfoOpened, toggleLayers, activeLayers, updateActiveLayers}) {
+    layers, layersInfoOpened, toggleLayers, activeLayers, updateActiveLayers, isQueried, handleSetIsQueried}) {
 
     let layersMap
     if (layers) {
@@ -21,6 +21,8 @@ export default function LayerSidebarTab({
                         toggleLayers={toggleLayers}
                         active={active}
                         updateActiveLayers={updateActiveLayers}
+                        isQueried={isQueried}
+                        handleSetIsQueried={handleSetIsQueried}
                     />
                 </div>
             )

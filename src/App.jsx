@@ -22,6 +22,7 @@ export default function App() {
     const [activeGeoJson, setActiveGeoJson] = useState([])
     const [currentTab, setCurrentTab] = useState("allLayers")
     const [layers, setLayers] = useState(null)
+    const [isQueried, setIsQueried] = useState({name: '', trigger: false})
 
     useEffect(() => {
         const handleFetchLayerInfo = async () => {
@@ -42,6 +43,8 @@ export default function App() {
             <MapComponent 
                 activeGeoJson={activeGeoJson}
                 activeLayers={activeLayers}
+                isQueried={isQueried}
+                setIsQueried={setIsQueried}
             />
 
             <div
@@ -54,6 +57,8 @@ export default function App() {
                     activeLayers={activeLayers}
                     setActiveLayers={setActiveLayers}
                     sidebarToggled={sidebarIsVisible}
+                    isQueried={isQueried}
+                    setIsQueried={setIsQueried}
                     toggleSidebar={() => setSidebarIsVisible(prev => !prev)}
                     currentTab={currentTab}
                     setCurrentTab={setCurrentTab}

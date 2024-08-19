@@ -28,7 +28,7 @@ import LayerGroup from 'ol/layer/Group';
 import { Tile } from 'ol';
 import getExtent from '../apis/getExtent';
 
-const MapComponent = ({ activeLayers }) => {
+const MapComponent = ({ activeLayers, isQueried, setIsQueried }) => {
 
     console.log('re-rendering')
     console.log(activeLayers)
@@ -91,6 +91,11 @@ const MapComponent = ({ activeLayers }) => {
 
     }, [])
 
+    // Handling setLayerExtents
+    const handleSetLayerExtents = (layerName) => {
+
+    }
+
     // Helper function to export view functions
     setViewRef.current = (extent) => {
         if (mapState) {
@@ -126,7 +131,10 @@ const MapComponent = ({ activeLayers }) => {
     }
     const handleTileBuild = async (activeLayersChange) => {
         const extentMeters = await getExtent(activeLayersChange.name)
+        console.log('running handleTileBuild')
+        console.log(extentMeters)
         buildTileLayer(extentMeters, activeLayersChange)
+        return extentMeters
     }
     // Handles adding geojsons
     const handleGeoJSONLayer = async(activeLayersChange) => {
@@ -144,6 +152,7 @@ const MapComponent = ({ activeLayers }) => {
         const vectorSource = new VectorSource({
             features: new GeoJSON().readFeatures(geoJson['json_build_object'])
         })
+        // handle adding extent to state
         const vectorLayer = new VectorLayer({
             source: vectorSource,
             name: activeLayersChange.name,
@@ -158,8 +167,25 @@ const MapComponent = ({ activeLayers }) => {
         })
         vectorLayer.setZIndex(activeLayers.length)
         mapState.addLayer(vectorLayer)
+        return vectorSource.getExtent()
     }
-
+    useEffect(() => {
+        console.log('Starting zoom query')
+        console.log(`queried layer name: ${isQueried.name}`)
+        console.log('current extents:')
+        console.log(layerExtents)
+        if (isQueried.name === "") {
+            return
+        }
+        if (!mapState) {
+            return
+        }
+        if (!layerExtents) {
+            return
+        }
+        const extent = layerExtents.filter(layer => layer.name === isQueried.name)[0].extent
+        mapState.getView().fit(extent, mapState.getSize())
+    }, [isQueried])
 
     useEffect(() => {
         /* Make sure map is properly mounted, not sure why we're doing this */
@@ -278,13 +304,20 @@ const MapComponent = ({ activeLayers }) => {
                         }
                     }                
                 })
+                setLayerExtents(prevLayerExtents => {
+                    let newLayerExtents = []
+                    newLayerExtents = prevLayerExtents.filter(layer => layer.name !== activeLayersChange.name)
+                    return newLayerExtents
+                })
+
             }
             else {
+                let extent 
                 console.log('adding layer...')
                 if (activeLayersChange.type === "geojson") {
                     console.log('adding geojson')
                     console.log(activeLayersChange.name)
-                    handleGeoJSONLayer(activeLayersChange)
+                    extent = handleGeoJSONLayer(activeLayersChange)
                 }
                 else if (activeLayersChange.type === "geotiff") {
                     const geoTIFFSource = new GeoTIFF({
@@ -305,46 +338,31 @@ const MapComponent = ({ activeLayers }) => {
                     mapState.addLayer(geoTIFFLayer)
                 }
                 else if (activeLayersChange.type === 'raster') {
-                    // const getExtent = async (layerName) => {
-                    //     const response = await fetchMetadata(layerName)
-                    //     const minX = response.min_x
-                    //     const maxX = response.max_x
-                    //     const minY = response.min_y
-                    //     const maxY = response.max_y
-
-                    //     const extentDegrees = [minX, minY, maxX, maxY]
-                    //     const extentMeters = transformExtent(extentDegrees, 'EPSG:4326', 'EPSG:3857')
-                    //     return extentMeters
-                    // }
-                    // const buildTileLayer = (extentMeters) => {
-                    //     const layerGroup = new LayerGroup({
-                    //         layers: [
-                    //             new TileLayer({
-                    //                 name: activeLayersChange.name,
-                    //                 extent: extentMeters,
-                    //                 source: new XYZ({
-                    //                     minZoom: 0,
-                    //                     maxZoom: 21,
-                    //                     url: `http://localhost:8000/api/raster/${activeLayersChange.name}/{z}/{x}/{-y}.png`,
-                    //                     tileSize: [256, 256]
-                    //                 })
-                    //             })
-                    //         ]
-                    //     })
-                    //     console.log('layer group debugging:')
-                    //     layerGroup.setVisible(true)
-                    //     layerGroup.setZIndex(activeLayers.length)
-                    //     mapState.addLayer(layerGroup)
-                        
-                    // }
-                    // const handleTileBuild = async (layerName) => {
-                    //     const extentMeters = await getExtent(layerName)
-                    //     buildTileLayer(extentMeters)
-                    // }
-                    handleTileBuild(activeLayersChange)
+                    extent = handleTileBuild(activeLayersChange)
                     console.log('success running buildTileLayer')
-                    // buildTileLayer(activeLayersChange.name)
+
                 }
+                const handleAddLayerExtents = async (layerName, extent) => {
+                    extent = await extent
+                    console.log('handling AddLayerExtent')
+                    console.log(extent)
+                    setLayerExtents((prevLayerExtents) => {
+                        if (prevLayerExtents) {
+                            let newLayerExtents = [...prevLayerExtents]
+                            newLayerExtents.push({name: layerName, extent: extent})
+                            console.log('pushed new extent')
+                            console.log(newLayerExtents)
+                            return newLayerExtents
+                        }
+                        else {
+                            return [{name: layerName, extent: extent}]
+                        }
+                    })
+                }
+                handleAddLayerExtents(activeLayersChange.name, extent)
+                console.log('layerExtents:')
+                console.log(layerExtents)
+                
             }
         }
         setPrevActiveLayers(activeLayers)

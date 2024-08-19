@@ -12,7 +12,8 @@ export default function Sidebar({layers,
         activeLayers, setActiveLayers, 
         sidebarToggled, toggleSidebar, 
         currentTab, setCurrentTab,
-        layersInfoOpened, setlayersInfoOpened
+        layersInfoOpened, setlayersInfoOpened,
+        isQueried, setIsQueried
     }) {
 
 
@@ -31,7 +32,7 @@ export default function Sidebar({layers,
             }
             else {
                 for (let layer of layers) {
-                    if (layer.id == layerId) {
+                    if (layer.id === layerId) {
                         newLayers.push(layer)
                         break
                     }
@@ -67,6 +68,12 @@ export default function Sidebar({layers,
         })
     }
 
+    function handleSetIsQueried(layerName) {
+        setIsQueried((prev) => {
+            return {name: layerName, trigger: !prev.trigger}
+        })
+    }
+
     return (
         <div
             className="sidebar"
@@ -92,6 +99,8 @@ export default function Sidebar({layers,
                     toggleLayers={toggleLayers}
                     activeLayers={activeLayers}
                     updateActiveLayers={updateActiveLayers}
+                    isQueried={isQueried}
+                    handleSetIsQueried={handleSetIsQueried}
                 />
             </div>
 
@@ -108,6 +117,8 @@ export default function Sidebar({layers,
                     activeLayers={activeLayers}
                     updateActiveLayers={updateActiveLayers}
                     rearrangeActiveLayers={rearrangeActiveLayers}
+                    isQueried={isQueried}
+                    handleSetIsQueried={handleSetIsQueried}
                 />
             </div>
         </div>

@@ -5,7 +5,7 @@ import "../Sidebar.css"
 // import handleZoomToExtent from "../helpers/handleZoomToExtent"
 
 export default function LayerTab({
-    id, name, info, infoOpened, toggleLayers, active, updateActiveLayers}) {
+    id, name, info, infoOpened, toggleLayers, active, updateActiveLayers, isQueried, handleSetIsQueried}) {
     return (
         <div 
             key={id} 
@@ -37,7 +37,7 @@ export default function LayerTab({
                         />
                     </button>
                     <button
-                        onClick={() => handleZoomToExtent(name)}
+                        onClick={() => handleSetIsQueried(name)}
                     >
                         <p>zoom to extent placeholder</p>
                     </button>

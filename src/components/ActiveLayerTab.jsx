@@ -5,7 +5,7 @@ import "../Sidebar.css"
 import { useDrag, useDrop } from "react-dnd"
 import { useRef, useEffect } from 'react'
 
-export default function ActiveLayerTab({ id, name, index, updateActiveLayers, rearrangeActiveLayers }) {
+export default function ActiveLayerTab({ id, name, index, updateActiveLayers, rearrangeActiveLayers, handleSetIsQueried }) {
     // See https://react-dnd.github.io/react-dnd/examples/sortable/simple
     const ref = useRef(null)
 
@@ -92,6 +92,11 @@ export default function ActiveLayerTab({ id, name, index, updateActiveLayers, re
                             } 
                             src={viewIcon}
                         />
+                    </button>
+                    <button
+                        onClick={() => handleSetIsQueried(name)}
+                    >
+
                     </button>
                 </div> 
 
