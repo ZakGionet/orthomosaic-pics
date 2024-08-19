@@ -103,7 +103,7 @@ const MapComponent = ({ activeLayers }) => {
 
     // Helper functions for handling tile layers layers
     
-    const buildTileLayer = (extentMeters) => {
+    const buildTileLayer = (extentMeters, activeLayersChange) => {
         const layerGroup = new LayerGroup({
             layers: [
                 new TileLayer({
@@ -124,12 +124,14 @@ const MapComponent = ({ activeLayers }) => {
         mapState.addLayer(layerGroup)
         
     }
-    const handleTileBuild = async (layerName) => {
-        const extentMeters = await getExtent(layerName)
-        buildTileLayer(extentMeters)
+    const handleTileBuild = async (activeLayersChange) => {
+        const extentMeters = await getExtent(activeLayersChange.name)
+        buildTileLayer(extentMeters, activeLayersChange)
     }
-
+    // Handles adding geojsons
     const handleGeoJSONLayer = async(activeLayersChange) => {
+        console.log('handling geojson fetch')
+        console.log(activeLayersChange)
         let parsedName = activeLayersChange.name.toLowerCase()
         parsedName = parsedName.replace(' ', '_')
         parsedName = parsedName.replace('-', '_')
@@ -282,7 +284,7 @@ const MapComponent = ({ activeLayers }) => {
                 if (activeLayersChange.type === "geojson") {
                     console.log('adding geojson')
                     console.log(activeLayersChange.name)
-                    handleGeoJSONLayer(activeLayersChange.name)
+                    handleGeoJSONLayer(activeLayersChange)
                 }
                 else if (activeLayersChange.type === "geotiff") {
                     const geoTIFFSource = new GeoTIFF({
@@ -339,7 +341,7 @@ const MapComponent = ({ activeLayers }) => {
                     //     const extentMeters = await getExtent(layerName)
                     //     buildTileLayer(extentMeters)
                     // }
-                    handleTileBuild(activeLayersChange.name)
+                    handleTileBuild(activeLayersChange)
                     console.log('success running buildTileLayer')
                     // buildTileLayer(activeLayersChange.name)
                 }
