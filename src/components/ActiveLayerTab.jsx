@@ -108,7 +108,7 @@ export default function ActiveLayerTab({
                         />
                     </button>
                     <button
-                        onClick={() => handleSetIsQueried(name)}
+                        onClick={() => handleSetIsQueried(name, true)}
                     >
                         <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>

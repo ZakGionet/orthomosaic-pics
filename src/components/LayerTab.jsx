@@ -54,7 +54,8 @@ export default function LayerTab({
                         />
                     </button>
                     <button
-                        onClick={() => handleSetIsQueried(name)}
+                        className={`sidebar--zoom-button${active ? "--active" : ""}`}
+                        onClick={() => handleSetIsQueried(name, active)}
                     >
                         <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>

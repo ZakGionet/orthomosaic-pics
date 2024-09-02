@@ -78,7 +78,11 @@ export default function App() {
         })
     }
     // Handling setIsQueried
-    function handleSetIsQueried(layerName) {
+    function handleSetIsQueried(layerName, isActive) {
+        if (!isActive) {
+            console.log(`is active: ${isActive}`)
+            return
+        }
         setIsQueried((prev) => {
             return {name: layerName, trigger: !prev.trigger}
         })

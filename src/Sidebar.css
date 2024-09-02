@@ -121,7 +121,16 @@
   .sidebar--layer--view--icon--active {
     height: 1.5rem;
   }
-
+.sidebar--zoom-button{
+  opacity: 50%;
+  cursor: not-allowed !important; 
+}
+.sidebar--zoom-button:hover {
+  filter: brightness(100%) !important;
+}
+  .sidebar--zoom-button--active{
+    opacity: 100%;
+  }
 .sidebar--zoom-icon {
   height: 1.5rem;
 }
