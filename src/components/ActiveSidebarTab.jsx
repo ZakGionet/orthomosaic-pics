@@ -3,8 +3,19 @@ import "../Sidebar.css"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
-export default function ActiveSidebarTab({activeLayers, updateActiveLayers, rearrangeActiveLayers, handleSetIsQueried }) {
+import { ActiveLayersContext, QueriedContext } from "../contexts/Contexts"
+import { useContext } from "react"
 
+export default function ActiveSidebarTab({
+    // activeLayers, 
+    // updateActiveLayers, 
+    // rearrangeActiveLayers, 
+    // handleSetIsQueried 
+}) {
+
+    const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
+    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    
     const activeLayersMap = activeLayers.map((activeLayer, i) => {
         console.log(activeLayer.name)
         return (

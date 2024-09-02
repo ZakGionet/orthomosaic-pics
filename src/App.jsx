@@ -101,7 +101,11 @@ export default function App() {
             value={layers}
         >
             <QueriedContext.Provider
-                value={{isQueried, handleSetIsQueried}}
+                value=
+                    {{
+                        isQueried, 
+                        handleSetIsQueried
+                    }}
             >
                 <ActiveLayersContext.Provider
                     value=
@@ -115,9 +119,9 @@ export default function App() {
                 <main>
                     <MapComponent 
                         activeGeoJson={activeGeoJson}
-                        activeLayers={activeLayers}
-                        isQueried={isQueried}
-                        setIsQueried={setIsQueried}
+                        // activeLayers={activeLayers}
+                        // isQueried={isQueried}
+                        // setIsQueried={setIsQueried}
                     />
 
                     <div
@@ -126,12 +130,12 @@ export default function App() {
                         }
                     >
                         <Sidebar 
-                            layers={layers}
-                            activeLayers={activeLayers}
-                            setActiveLayers={setActiveLayers}
+                            // layers={layers}
+                            // activeLayers={activeLayers}
+                            // setActiveLayers={setActiveLayers}
                             sidebarToggled={sidebarIsVisible}
-                            isQueried={isQueried}
-                            setIsQueried={setIsQueried}
+                            // isQueried={isQueried}
+                            // setIsQueried={setIsQueried}
                             toggleSidebar={() => setSidebarIsVisible(prev => !prev)}
                             currentTab={currentTab}
                             setCurrentTab={setCurrentTab}

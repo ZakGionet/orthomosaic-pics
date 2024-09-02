@@ -1,8 +1,22 @@
 import LayerTab from "./LayerTab"
 import "../Sidebar.css"
 
+import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
+import { useContext } from "react"
+
 export default function LayerSidebarTab({
-    layers, layersInfoOpened, toggleLayers, activeLayers, updateActiveLayers, isQueried, handleSetIsQueried}) {
+        // layers, 
+        layersInfoOpened,
+        // toggleLayers,
+        // activeLayers,
+        // updateActiveLayers,
+        // isQueried,
+        // handleSetIsQueried
+    }) {
+    
+    const layers = useContext(LayersContext)
+    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
 
     let layersMap
     if (layers) {
@@ -18,11 +32,11 @@ export default function LayerSidebarTab({
                         name={layer.name}
                         info={layer.info}
                         infoOpened={infoOpened}
-                        toggleLayers={toggleLayers}
+                        // toggleLayers={toggleLayers}
                         active={active}
-                        updateActiveLayers={updateActiveLayers}
-                        isQueried={isQueried}
-                        handleSetIsQueried={handleSetIsQueried}
+                        // updateActiveLayers={updateActiveLayers}
+                        // isQueried={isQueried}
+                        // handleSetIsQueried={handleSetIsQueried}
                     />
                 </div>
             )

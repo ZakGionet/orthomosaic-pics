@@ -4,8 +4,24 @@ import infoIcon from "../assets/info-icon.svg"
 import "../Sidebar.css"
 // import handleZoomToExtent from "../helpers/handleZoomToExtent"
 
+import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
+import { useContext } from "react"
+
 export default function LayerTab({
-    id, name, info, infoOpened, toggleLayers, active, updateActiveLayers, isQueried, handleSetIsQueried}) {
+        id, 
+        name, 
+        info, 
+        infoOpened, 
+        // toggleLayers, 
+        active, 
+        // updateActiveLayers, 
+        // isQueried, 
+        // handleSetIsQueried
+    }) {
+    
+    const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
+    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    
     return (
         <div 
             key={id} 

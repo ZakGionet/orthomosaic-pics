@@ -1,34 +1,35 @@
 import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
+import View from 'ol/View.js';
+import Link from 'ol/interaction/Link';
+import {Style, Fill, Stroke} from 'ol/style';
+import ScaleLine from 'ol/control/ScaleLine'
+import ZoomToExtent from 'ol/control/ZoomToExtent.js'
+import 'ol/ol.css';
+import LayerGroup from 'ol/layer/Group';
+
 import TileLayer from 'ol/layer/Tile.js';
 import webGLTileLayer from 'ol/layer/WebGLTile.js'
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoTIFF } from 'ol/source';
-import TileSource from 'ol/source/Tile';
-
 import XYZ from 'ol/source/XYZ';
 import GeoJSON from "ol/format/GeoJSON.js";
-import View from 'ol/View.js';
-import { useEffect, useState, useRef } from "react"
-import 'ol/ol.css';
-import {fromLonLat} from 'ol/proj'
-import Link from 'ol/interaction/Link';
-import {Style, Fill, Stroke} from 'ol/style';
-import { get as getProjection, getUserProjection } from 'ol/proj'
-import proj4 from "proj4"
-import {register} from 'ol/proj/proj4.js';
-import Zoom from 'ol/control/Zoom.js'
-import ScaleLine from 'ol/control/ScaleLine'
-import ZoomToExtent from 'ol/control/ZoomToExtent.js'
-import fetchXYZTiles from '../apis/getTiles';
-import fetchMetadata from '../apis/fetchMetadata';
-import { transformExtent } from 'ol/proj';
-import LayerGroup from 'ol/layer/Group';
-import { Tile } from 'ol';
+
+import { useEffect, useState, useRef, useContext } from "react"
+
 import getExtent from '../apis/getExtent';
 
-const MapComponent = ({ activeLayers, isQueried, setIsQueried }) => {
+import { ActiveLayersContext, QueriedContext } from '../contexts/Contexts';
+
+const MapComponent = ({ 
+        // activeLayers, 
+        // isQueried 
+    }) => {
+
+    // Contexts
+    const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers} = useContext(ActiveLayersContext)
+    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
 
     console.log('re-rendering')
     console.log(activeLayers)
