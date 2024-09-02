@@ -9,122 +9,42 @@ import "../Sidebar.css"
 
 
 export default function Sidebar({
-        // layers, 
-        // activeLayers, 
-        // setActiveLayers, 
         sidebarToggled, 
         toggleSidebar, 
         currentTab, 
         setCurrentTab,
         layersInfoOpened, 
         setlayersInfoOpened,
-        // isQueried, 
-        // setIsQueried
     }) {
 
-    // function updateActiveLayers(layerId) {
-    //     console.log(`start updating active layers for layerId: ${layerId}`)
-    //     setActiveLayers(prevLayers => {
-    //         console.log('prev-layers:')
-    //         console.log(prevLayers)
-    //         const prevLayersKeys = prevLayers.map(layer => layer?.id)
-    //         console.log('prev-layers keys:')
-    //         console.log(prevLayersKeys)
-    //         let newLayers = [...prevLayers]
-    //         if (prevLayersKeys.includes(layerId)) {
-    //             newLayers = prevLayers.filter(value => value.id !== layerId)
-    //         }
-    //         else {
-    //             for (let layer of layers) {
-    //                 if (layer.id === layerId) {
-    //                     newLayers.push(layer)
-    //                     break
-    //                 }
-    //             }
-    //         }
-    //         return newLayers
-    //     })
-    // }
-
-    // function rearrangeActiveLayers(dragIndex, hoverIndex) {
-    //     setActiveLayers((prevActiveLayers) => {
-    //         let newActiveLayers = [...prevActiveLayers]
-
-    //         let movedActiveLayers = newActiveLayers[dragIndex]
-
-    //         newActiveLayers.splice(dragIndex, 1)
-    //         newActiveLayers.splice(hoverIndex, 0, movedActiveLayers)
-
-    //         return newActiveLayers
-    //     })
-    // }
-
-    // function toggleLayers(layerId) {
-    //     setInfoToggledLayers(prevToggled => {
-    //         let newToggled = [...prevToggled]
-    //         if (prevToggled.includes(layerId)) {
-    //             newToggled = prevToggled.filter(value => value !== layerId)
-    //         }
-    //         else {
-    //             newToggled.push(layerId)
-    //         }
-    //         return newToggled
-    //     })
-    // }
-
-    // function handleSetIsQueried(layerName) {
-    //     setIsQueried((prev) => {
-    //         return {name: layerName, trigger: !prev.trigger}
-    //     })
-    // }
 
     return (
         <div
             className="sidebar"
         >
-            <div>
-                <SidebarHeader 
-                    currentTab={currentTab}
-                    setCurrentTab={setCurrentTab}
-                />
-            </div>
-
-            <div
+            <SidebarHeader 
+                currentTab={currentTab}
+                setCurrentTab={setCurrentTab}
+            />
+            <LayerSidebarTab 
                 className={
                     `sidebar--all--layers--tab 
-                    ${currentTab !== "allLayers" ?
-                    "hidden-sidebar": ""
-                }`
-                }
-            >
-                <LayerSidebarTab 
-                    // layers={layers}
-                    layersInfoOpened={layersInfoOpened}
-                    // toggleLayers={toggleLayers}
-                    // activeLayers={activeLayers}
-                    // updateActiveLayers={updateActiveLayers}
-                    // isQueried={isQueried}
-                    // handleSetIsQueried={handleSetIsQueried}
-                />
-            </div>
 
-            <div
+                    ${currentTab !== "allLayers" 
+                        ?
+                    "hidden-sidebar": ""}`
+                }
+                layersInfoOpened={layersInfoOpened}
+            />
+            <ActiveSidebarTab 
                 className={
                     `sidebar--active--layers--tab 
-                    ${currentTab !== "activeLayers" ?
-                    "hidden-sidebar": ""
-                }`
-                    
+
+                    ${currentTab !== "activeLayers" 
+                        ?
+                    "hidden-sidebar": ""}`
                 }
-            >
-                <ActiveSidebarTab 
-                    // activeLayers={activeLayers}
-                    // updateActiveLayers={updateActiveLayers}
-                    // rearrangeActiveLayers={rearrangeActiveLayers}
-                    // isQueried={isQueried}
-                    // handleSetIsQueried={handleSetIsQueried}
-                />
-            </div>
+            />
         </div>
     )
 }

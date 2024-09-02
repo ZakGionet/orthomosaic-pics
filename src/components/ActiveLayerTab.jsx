@@ -1,6 +1,8 @@
 import moveIcon from "../assets/move-icon.svg"
 import viewIcon from "../assets/view-icon.svg"
 import fileIcon from "../assets/file-icon.svg"
+import zoomIcon from "../assets/zoom-icon.svg"
+
 import "../Sidebar.css"
 import { useDrag, useDrop } from "react-dnd"
 import { useRef, useEffect } from 'react'
@@ -13,14 +15,11 @@ export default function ActiveLayerTab({
     id, 
     name, 
     index, 
-    // updateActiveLayers, 
-    // rearrangeActiveLayers, 
-    // handleSetIsQueried 
 }) {
 
     const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
-    
+
     // See https://react-dnd.github.io/react-dnd/examples/sortable/simple
     const ref = useRef(null)
 
@@ -111,7 +110,7 @@ export default function ActiveLayerTab({
                     <button
                         onClick={() => handleSetIsQueried(name)}
                     >
-
+                        <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>
                 </div> 
 

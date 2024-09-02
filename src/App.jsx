@@ -130,12 +130,7 @@ export default function App() {
                         }
                     >
                         <Sidebar 
-                            // layers={layers}
-                            // activeLayers={activeLayers}
-                            // setActiveLayers={setActiveLayers}
                             sidebarToggled={sidebarIsVisible}
-                            // isQueried={isQueried}
-                            // setIsQueried={setIsQueried}
                             toggleSidebar={() => setSidebarIsVisible(prev => !prev)}
                             currentTab={currentTab}
                             setCurrentTab={setCurrentTab}

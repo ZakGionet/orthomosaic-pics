@@ -5,13 +5,8 @@ import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/
 import { useContext } from "react"
 
 export default function LayerSidebarTab({
-        // layers, 
+        className,
         layersInfoOpened,
-        // toggleLayers,
-        // activeLayers,
-        // updateActiveLayers,
-        // isQueried,
-        // handleSetIsQueried
     }) {
     
     const layers = useContext(LayersContext)
@@ -32,20 +27,16 @@ export default function LayerSidebarTab({
                         name={layer.name}
                         info={layer.info}
                         infoOpened={infoOpened}
-                        // toggleLayers={toggleLayers}
                         active={active}
-                        // updateActiveLayers={updateActiveLayers}
-                        // isQueried={isQueried}
-                        // handleSetIsQueried={handleSetIsQueried}
                     />
                 </div>
             )
         })
     } else {
-        layersMap = <h1>Loading placeholder</h1>
+        layersMap = <span className="sidebar--loading">Loading placeholders...</span>
     }
     return (
-        <div>
+        <div className={className}>
             {layersMap}
         </div>
     )

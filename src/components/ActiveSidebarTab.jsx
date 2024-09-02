@@ -7,15 +7,12 @@ import { ActiveLayersContext, QueriedContext } from "../contexts/Contexts"
 import { useContext } from "react"
 
 export default function ActiveSidebarTab({
-    // activeLayers, 
-    // updateActiveLayers, 
-    // rearrangeActiveLayers, 
-    // handleSetIsQueried 
+    className
 }) {
 
     const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
-    
+
     const activeLayersMap = activeLayers.map((activeLayer, i) => {
         console.log(activeLayer.name)
         return (
@@ -24,9 +21,6 @@ export default function ActiveSidebarTab({
                 key={activeLayer.id}
                 index={i}
                 name={activeLayer.name}
-                updateActiveLayers={updateActiveLayers}
-                rearrangeActiveLayers={rearrangeActiveLayers}
-                handleSetIsQueried={handleSetIsQueried}
             />
         )
     })
@@ -34,11 +28,9 @@ export default function ActiveSidebarTab({
     activeLayersMap.reverse()
     
     return (
-        <div>
+        <div className={className}>
             <DndProvider backend={HTML5Backend}>
-                <div>
-                    {activeLayersMap}
-                </div>
+                {activeLayersMap}
             </DndProvider>
         </div>
     )

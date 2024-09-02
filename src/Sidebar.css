@@ -1,15 +1,4 @@
-.sidebar--active--layers--tab,
-.sidebar--all--layers--tab {
-    display: block;
-    transition: transform 0.3s;
-    transform: translateX(0);
-}
 
-.hidden-sidebar {
-    transition: transform 0.3s;
-    transform: translateX(100%);
-    display: none;
-}
 .sidebar {
     height: 100%;
     width: 100%;
@@ -47,9 +36,19 @@
 
   .sidebar--all--layers--tab, 
   .sidebar--active--layers--tab {
+    display: block;
+    transition: transform 0.3s;
+    transform: translateX(0);
+    overflow-y: scroll;
     margin-top: 1rem;
     margin-left: 0.5rem;
+    height: inherit;
   }
+    .hidden-sidebar {
+      transition: transform 0.3s;
+      transform: translateX(100%);
+      display: none;
+    }
     .sidebar--layer,
     .sidebar--active--layer {
       color: black;
@@ -66,7 +65,6 @@
       }
 
 .sidebar--layer--top {
-
   padding-left: 1rem;
   display: flex;
   justify-content: space-between;
@@ -78,6 +76,8 @@
 .sidebar--layer--left {
   display: flex;
   align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .file-icon {
   flex-shrink: 0;
@@ -122,6 +122,9 @@
     height: 1.5rem;
   }
 
+.sidebar--zoom-icon {
+  height: 1.5rem;
+}
 .sidebar--layer--bottom {
   height: 5rem;
   background-color: gray;

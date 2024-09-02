@@ -111,6 +111,7 @@ const MapComponent = ({
     
     const buildTileLayer = (extentMeters, activeLayersChange) => {
         const layerGroup = new LayerGroup({
+            name: activeLayersChange.name,
             layers: [
                 new TileLayer({
                     name: activeLayersChange.name,
@@ -298,9 +299,10 @@ const MapComponent = ({
                 layerArray.forEach(layer => {
                     // This condition is to ignore the osm layer
                     if (layer.get('name') != 'osm-layer') {
-                        console.log(layer.get('name'))
+                        console.log(`layer ${layer.get('name')}:`)
+                        console.log(layer)
                         if (layer.get('name') === activeLayersChange.name) {
-                            console.log('found a match!')
+                            console.log(`Found layer '${layer.get('name')}' to remove.`)
                             mapState.removeLayer(layer)
                         }
                     }                

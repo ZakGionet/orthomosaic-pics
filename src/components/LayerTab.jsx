@@ -1,6 +1,7 @@
 import fileIcon from "../assets/file-icon.svg"
 import viewIcon from "../assets/view-icon.svg"
 import infoIcon from "../assets/info-icon.svg"
+import zoomIcon from "../assets/zoom-icon.svg"
 import "../Sidebar.css"
 // import handleZoomToExtent from "../helpers/handleZoomToExtent"
 
@@ -21,7 +22,7 @@ export default function LayerTab({
     
     const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
-    
+
     return (
         <div 
             key={id} 
@@ -55,7 +56,7 @@ export default function LayerTab({
                     <button
                         onClick={() => handleSetIsQueried(name)}
                     >
-                        <p>zoom to extent placeholder</p>
+                        <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>
                 </div> 
             </div>
