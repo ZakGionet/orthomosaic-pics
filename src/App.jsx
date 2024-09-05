@@ -11,8 +11,8 @@ import database from './database';
 // import layerArr from "./json_layer"
 import GeoJSON from 'ol/format/GeoJSON';
 import SidebarButton from './components/SidebarButton';
-import getLayers from './apis/getLayers.js'
-import fetchLayerInfo from './apis/getLayers.js';
+import getLayers from './apis/fetchLayerInfo.js'
+import fetchLayerInfo from './apis/fetchLayerInfo.js';
 import layerInfoMatchIds from './helpers/layerInfoMatchIds.js';
 
 import { LayersContext, QueriedContext, ActiveLayersContext } from './contexts/Contexts.js';
@@ -87,6 +87,7 @@ export default function App() {
             return {name: layerName, trigger: !prev.trigger}
         })
     }
+
     useEffect(() => {
         const handleFetchLayerInfo = async () => {
             const layerInfo = await fetchLayerInfo()
@@ -95,6 +96,7 @@ export default function App() {
         }
         handleFetchLayerInfo()
     }, [])
+
     useEffect(() => {
         console.log("layers::")
         console.log(layers)
@@ -123,9 +125,6 @@ export default function App() {
                 <main>
                     <MapComponent 
                         activeGeoJson={activeGeoJson}
-                        // activeLayers={activeLayers}
-                        // isQueried={isQueried}
-                        // setIsQueried={setIsQueried}
                     />
 
                     <div

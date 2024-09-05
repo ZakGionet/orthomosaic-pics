@@ -24,7 +24,8 @@ export default function LayerSidebarTab({
                 >
                     <LayerTab 
                         id={layer.id}
-                        name={layer.name}
+                        layerName={layer.layer_name}
+                        fileName={layer.file_name}
                         info={layer.info}
                         infoOpened={infoOpened}
                         active={active}

@@ -5,6 +5,10 @@ import Link from 'ol/interaction/Link';
 import {Style, Fill, Stroke} from 'ol/style';
 import ScaleLine from 'ol/control/ScaleLine'
 import ZoomToExtent from 'ol/control/ZoomToExtent.js'
+import Rotate from 'ol/control/Rotate.js'
+import MousePosition from 'ol/control/MousePosition.js'
+import Zoom from 'ol/control/Zoom.js'
+
 import 'ol/ol.css';
 import LayerGroup from 'ol/layer/Group';
 
@@ -18,7 +22,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 
 import { useEffect, useState, useRef, useContext } from "react"
 
-import getExtent from '../apis/getExtent';
+import fetchExtent from '../apis/fetchExtent';
 
 import { ActiveLayersContext, QueriedContext } from '../contexts/Contexts';
 
@@ -76,13 +80,17 @@ const MapComponent = ({
         /* Interactions */
         mapInstance.addInteraction(new Link())
 
+        const rotate = new Rotate()
+        mapInstance.addControl(rotate)
+        
+        const mousePosition = new MousePosition()
+        mapInstance.addControl(mousePosition)
+
         const scaleLine = new ScaleLine()
         mapInstance.addControl(scaleLine)
 
   
-        const zoomToExtent = new ZoomToExtent({
-            label: "no work:("
-        })
+        const zoomToExtent = new ZoomToExtent()
         mapInstance.addControl(zoomToExtent)
 
         /* Point the map to null when component unmounts */
@@ -111,15 +119,15 @@ const MapComponent = ({
     
     const buildTileLayer = (extentMeters, activeLayersChange) => {
         const layerGroup = new LayerGroup({
-            name: activeLayersChange.name,
+            name: activeLayersChange.file_name,
             layers: [
                 new TileLayer({
-                    name: activeLayersChange.name,
+                    name: activeLayersChange.file_name,
                     extent: extentMeters,
                     source: new XYZ({
                         minZoom: 0,
                         maxZoom: 21,
-                        url: `http://localhost:8000/api/raster/${activeLayersChange.name}/{z}/{x}/{-y}.png`,
+                        url: `http://localhost:8000/api/raster/${activeLayersChange.file_name}/{z}/{x}/{-y}.png`,
                         tileSize: [256, 256]
                     })
                 })
@@ -132,7 +140,7 @@ const MapComponent = ({
         
     }
     const handleTileBuild = async (activeLayersChange) => {
-        const extentMeters = await getExtent(activeLayersChange.name)
+        const extentMeters = await fetchExtent(activeLayersChange.file_name)
         console.log('running handleTileBuild')
         console.log(extentMeters)
         buildTileLayer(extentMeters, activeLayersChange)
@@ -142,9 +150,9 @@ const MapComponent = ({
     const handleGeoJSONLayer = async(activeLayersChange) => {
         console.log('handling geojson fetch')
         console.log(activeLayersChange)
-        let parsedName = activeLayersChange.name.toLowerCase()
-        parsedName = parsedName.replace(' ', '_')
-        parsedName = parsedName.replace('-', '_')
+        let parsedName = activeLayersChange.file_name.toLowerCase()
+        parsedName = parsedName.replaceAll(' ', '_')
+        parsedName = parsedName.replaceAll('-', '_')
         const fileResponse = await fetch(`http://localhost:8000/api/geojson/${parsedName}`);
         console.log(fileResponse)
         const geoJson = await fileResponse.json();
@@ -157,7 +165,7 @@ const MapComponent = ({
         // handle adding extent to state
         const vectorLayer = new VectorLayer({
             source: vectorSource,
-            name: activeLayersChange.name,
+            name: activeLayersChange.file_name,
             style: new Style({
                 fill: new Fill({
                     color: activeLayersChange.fill
@@ -285,10 +293,10 @@ const MapComponent = ({
 
         /* Is assigned the element which is in one layer and not the other */
         let activeLayersChange = longest.filter(longestLayer => {
-            return !shortest.some(shortestLayer => shortestLayer.name === longestLayer.name);
+            return !shortest.some(shortestLayer => shortestLayer.file_name === longestLayer.file_name);
         })[0];
 
-        console.log(`Filtered activeLayers: ${activeLayersChange.name}`)
+        console.log(`Filtered activeLayers: ${activeLayersChange.file_name}`)
         console.log(activeLayersChange)
         /* Not sure why we're checking if the layers array exists */
         if (mapState.getLayers().getArray()) {
@@ -301,16 +309,20 @@ const MapComponent = ({
                     if (layer.get('name') != 'osm-layer') {
                         console.log(`layer ${layer.get('name')}:`)
                         console.log(layer)
-                        if (layer.get('name') === activeLayersChange.name) {
+                        if (layer.get('name') === activeLayersChange.file_name) {
                             console.log(`Found layer '${layer.get('name')}' to remove.`)
                             mapState.removeLayer(layer)
                         }
                     }                
                 })
                 setLayerExtents(prevLayerExtents => {
+                    console.log(`Removing layer extent  ${activeLayersChange.file_name}`)
                     let newLayerExtents = []
-                    newLayerExtents = prevLayerExtents.filter(layer => layer.name !== activeLayersChange.name)
+                    newLayerExtents = prevLayerExtents.filter(layer => layer.name !== activeLayersChange.file_name)
+                    console.log(`new extents array:`)
+                    console.log(newLayerExtents)
                     return newLayerExtents
+                    
                 })
 
             }
@@ -319,7 +331,7 @@ const MapComponent = ({
                 console.log('adding layer...')
                 if (activeLayersChange.type === "geojson") {
                     console.log('adding geojson')
-                    console.log(activeLayersChange.name)
+                    console.log(activeLayersChange.file_name)
                     extent = handleGeoJSONLayer(activeLayersChange)
                 }
                 else if (activeLayersChange.type === "geotiff") {
@@ -334,7 +346,7 @@ const MapComponent = ({
                     })
                     const geoTIFFLayer = new webGLTileLayer({
                         source: geoTIFFSource,
-                        name: activeLayersChange.name,
+                        name: activeLayersChange.file_name,
                     })
                     geoTIFFLayer.setVisible(true)    
                     geoTIFFLayer.setZIndex(activeLayers.length)
@@ -362,7 +374,7 @@ const MapComponent = ({
                         }
                     })
                 }
-                handleAddLayerExtents(activeLayersChange.name, extent)
+                handleAddLayerExtents(activeLayersChange.file_name, extent)
                 console.log('layerExtents:')
                 console.log(layerExtents)
                 

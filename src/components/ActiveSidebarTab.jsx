@@ -20,7 +20,8 @@ export default function ActiveSidebarTab({
                 id={activeLayer.id}
                 key={activeLayer.id}
                 index={i}
-                name={activeLayer.name}
+                layerName={activeLayer.layer_name}
+                fileName={activeLayer.file_Name}
             />
         )
     })

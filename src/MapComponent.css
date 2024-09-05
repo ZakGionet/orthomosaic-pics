@@ -1,6 +1,7 @@
 #map {
     height: 100vh;
 }
+
 .ol-zoom {
     top: auto;
     left: auto;
@@ -19,4 +20,16 @@
     left: auto;
     bottom: 10rem;
     right: 0.5rem;
+}
+
+.ol-mouse-position {
+    border: solid;
+    border-radius: 2px;
+    border-width: 1px;
+    top: auto;
+    left: auto;
+    font-family: Roboto;
+    font-size: 0.8rem;
+    bottom: 0;
+    right: 20rem;
 }

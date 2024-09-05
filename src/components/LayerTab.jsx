@@ -10,14 +10,11 @@ import { useContext } from "react"
 
 export default function LayerTab({
         id, 
-        name, 
+        layerName,
+        fileName, 
         info, 
         infoOpened, 
-        // toggleLayers, 
         active, 
-        // updateActiveLayers, 
-        // isQueried, 
-        // handleSetIsQueried
     }) {
     
     const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
@@ -35,7 +32,7 @@ export default function LayerTab({
             <div className="sidebar--layer--top">
                 <div className="sidebar--layer--left">
                     <img className="file-icon" src={fileIcon} />
-                    {name}
+                    {layerName}
                 </div>
                 <div className="sidebar--icons">
                     <button 
@@ -55,7 +52,7 @@ export default function LayerTab({
                     </button>
                     <button
                         className={`sidebar--zoom-button${active ? "--active" : ""}`}
-                        onClick={() => handleSetIsQueried(name, active)}
+                        onClick={() => handleSetIsQueried(fileName, active)}
                     >
                         <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>

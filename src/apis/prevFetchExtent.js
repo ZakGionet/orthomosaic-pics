@@ -1,7 +1,8 @@
+// File has been combined with fetchExtent.js - deprecated
 import fetchMetadata from "./fetchMetadata"
 import { transformExtent } from "ol/proj"
 
-const getExtent = async (layerName) => {
+const fetchExtent = async (layerName) => {
     console.log(`running getExtent on ${layerName}:`)
     const response = await fetchMetadata(layerName)
     const minX = response.min_x
@@ -15,4 +16,4 @@ const getExtent = async (layerName) => {
     console.log(`extent in meters: ${extentMeters}`)
     return extentMeters
 }
-export default getExtent
+export default fetchExtent

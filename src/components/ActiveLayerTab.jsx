@@ -13,7 +13,8 @@ import { useContext } from "react"
 
 export default function ActiveLayerTab({ 
     id, 
-    name, 
+    layerName, 
+    fileName,
     index, 
 }) {
 
@@ -92,7 +93,7 @@ export default function ActiveLayerTab({
 
                 <div className="sidebar--layer--left">
                     <img className="file-icon" src={fileIcon} />
-                    {name}
+                    {layerName}
                 </div>
 
                 <div className="sidebar--icons">
@@ -108,7 +109,7 @@ export default function ActiveLayerTab({
                         />
                     </button>
                     <button
-                        onClick={() => handleSetIsQueried(name, true)}
+                        onClick={() => handleSetIsQueried(fileName, true)}
                     >
                         <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>
