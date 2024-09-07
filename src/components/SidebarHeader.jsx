@@ -4,27 +4,27 @@ import viewIcon from "../assets/view-icon.svg"
 export default function SidebarHeader( {currentTab, setCurrentTab} ) {
     return (
         <div
-            className={`sidebar--header--container`}
+            className={`header`}
         >
             <div
-                className={`sidebar--header--button--container`}
+                className={`button--container`}
             >
                 <button
-                    className={`sidebar--header--button--all--layers`}
+                    className={``}
                     onClick={() => setCurrentTab("allLayers")}
                 >
-                    <img className="sidebar--header--directory--icon" src={directoryIcon}/>
+                    <img className="icon" src={directoryIcon}/>
                 </button>
             </div>
 
             <div
-                className={`sidebar--header--button--container`}
+                className={`button--container`}
             >
                 <button
-                    className={`sidebar--header--button--active--layers`}
+                    className={``}
                     onClick={() => setCurrentTab("activeLayers")}
                 >
-                    <img className="sidebar--header--view--icon" src={viewIcon}/>
+                    <img className="icon" src={viewIcon}/>
                 </button>
             </div>
         </div>

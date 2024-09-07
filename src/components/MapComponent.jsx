@@ -89,10 +89,6 @@ const MapComponent = ({
         const scaleLine = new ScaleLine()
         mapInstance.addControl(scaleLine)
 
-  
-        const zoomToExtent = new ZoomToExtent()
-        mapInstance.addControl(zoomToExtent)
-
         /* Point the map to null when component unmounts */
         return () => {
             mapInstance.setTarget(null)

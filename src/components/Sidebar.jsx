@@ -9,15 +9,31 @@ import "../Sidebar.css"
 
 
 export default function Sidebar({
-        sidebarToggled, 
-        toggleSidebar, 
-        currentTab, 
-        setCurrentTab,
-        layersInfoOpened, 
-        setlayersInfoOpened,
-    }) {
+    sidebarToggled, 
+    toggleSidebar, 
+    currentTab, 
+    setCurrentTab,
+    layersInfoOpened, 
+    setlayersInfoOpened,
+}) {
+
+    let panel
+    if (currentTab === 'allLayers') {
+        panel = 0
+    } 
+    else if (currentTab === 'activeLayers') {
+        panel = 1
+    }
+    const panelClass = 'panel_' + parseInt(panel)
+
+        // ${currentTab !== "allLayers" 
+        //     ?
+        // "hidden-sidebar": ""}
 
 
+        // ${currentTab !== "activeLayers" 
+        //     ?
+        // "hidden-sidebar": ""}
     return (
         <div
             className="sidebar"
@@ -26,25 +42,23 @@ export default function Sidebar({
                 currentTab={currentTab}
                 setCurrentTab={setCurrentTab}
             />
-            <LayerSidebarTab 
-                className={
-                    `sidebar--all--layers--tab 
+            <div className={`panel--container ${panelClass}`}> 
+                <LayerSidebarTab 
+                    className={
+                        `layers--panel 
 
-                    ${currentTab !== "allLayers" 
-                        ?
-                    "hidden-sidebar": ""}`
-                }
-                layersInfoOpened={layersInfoOpened}
-            />
-            <ActiveSidebarTab 
-                className={
-                    `sidebar--active--layers--tab 
+                        `
+                    }
+                    layersInfoOpened={layersInfoOpened}
+                />
+                <ActiveSidebarTab 
+                    className={
+                        `activeLayers--panel 
 
-                    ${currentTab !== "activeLayers" 
-                        ?
-                    "hidden-sidebar": ""}`
-                }
-            />
+                        `
+                    }
+                />
+            </div>
         </div>
     )
 }

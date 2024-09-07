@@ -70,7 +70,7 @@ export default function ActiveLayerTab({
         }
     })
 
-    const [{isDragging }, drag] = useDrag({
+    const [{ isDragging }, drag] = useDrag({
         type: 'activeLayer',
         item: () => {
             return {id, index}

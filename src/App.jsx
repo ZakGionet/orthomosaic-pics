@@ -1,21 +1,17 @@
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
-import OSM from 'ol/source/OSM.js';
-import TileLayer from 'ol/layer/Tile.js';
 import { useEffect, useState } from 'react';
-import MapComponent from './components/MapComponent';
 import "./MapComponent.css"
 import "./App.css"
+
+import MapComponent from './components/MapComponent';
 import Sidebar from './components/Sidebar';
-import database from './database';
-// import layerArr from "./json_layer"
-import GeoJSON from 'ol/format/GeoJSON';
 import SidebarButton from './components/SidebarButton';
-import getLayers from './apis/fetchLayerInfo.js'
+import ControlsOverlay from './components/ControlsOverlay.jsx';
+
 import fetchLayerInfo from './apis/fetchLayerInfo.js';
 import layerInfoMatchIds from './helpers/layerInfoMatchIds.js';
 
 import { LayersContext, QueriedContext, ActiveLayersContext } from './contexts/Contexts.js';
+
 export default function App() {
 
     const [layersInfoOpened, setlayersInfoOpened] = useState([])
@@ -51,7 +47,7 @@ export default function App() {
             return newLayers
         })
     }
-
+    
     function rearrangeActiveLayers(dragIndex, hoverIndex) {
         setActiveLayers((prevActiveLayers) => {
             let newActiveLayers = [...prevActiveLayers]
@@ -123,6 +119,7 @@ export default function App() {
                         }}
                 >
                 <main>
+                    <ControlsOverlay />
                     <MapComponent 
                         activeGeoJson={activeGeoJson}
                     />

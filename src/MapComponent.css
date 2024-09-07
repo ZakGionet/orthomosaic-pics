@@ -3,33 +3,40 @@
 }
 
 .ol-zoom {
-    top: auto;
-    left: auto;
-    bottom: 2rem;
-    right: 0.5rem;
+    top: auto !important;
+    left: auto !important;
+    bottom: 2rem !important;
+    right: 0.5rem !important;
 }
 
 .ol-scale-line {
-    top: auto;
-    left: auto;
-    right: 12rem;
-    bottom: 0;
+    top: auto !important;
+    left: auto !important;
+    right: 12rem !important;
+    bottom: 0 !important;
 }
-.ol-zoom-extent {
-    top: auto;
-    left: auto;
-    bottom: 10rem;
-    right: 0.5rem;
-}
+/* .ol-zoom-extent {
+    top: auto !important;
+    left: auto !important;
+    bottom: 10rem !important;
+    right: 0.5rem !important;
+} */
 
 .ol-mouse-position {
-    border: solid;
-    border-radius: 2px;
-    border-width: 1px;
-    top: auto;
-    left: auto;
     font-family: Roboto;
     font-size: 0.8rem;
-    bottom: 0;
-    right: 20rem;
+    top: auto !important;
+    left: auto !important;
+    bottom: 0 !important;
+    right: 22rem !important;
+}
+
+.ol-overlaycontainer-stopevent {
+    /* padding-bottom: 2rem !important; */
+}
+.ol-overlaycontainer-stopevent > * {
+    /* position: static !important; */
+    flex-direction: column;
+    /* padding-bottom: 3rem !important; */
+    height: auto;
 }

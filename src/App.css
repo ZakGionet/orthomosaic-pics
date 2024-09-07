@@ -20,6 +20,10 @@ button {
   width: 100vh;
   padding: 0;
   margin: 0;
+}.map:hover {
+  cursor: grab;
+}.map:active{
+  cursor: grabbing;
 }
 
 .sidebar--container {
@@ -29,7 +33,7 @@ button {
   left: 0;
   bottom: 0;
   width: 22rem;
-  height: 100%;
+  /* height: 100%; */
   transition: transform 0.3s;
   /* overflow: hidden; */
 }

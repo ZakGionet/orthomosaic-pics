@@ -6,62 +6,73 @@ import "../Sidebar.css"
 // import handleZoomToExtent from "../helpers/handleZoomToExtent"
 
 import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 
 export default function LayerTab({
-        id, 
-        layerName,
-        fileName, 
-        info, 
-        infoOpened, 
-        active, 
-    }) {
+    id, 
+    layerName,
+    fileName, 
+    info, 
+    infoOpened, 
+    active, 
+}) {
     
     const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    const [tabState, setTabState] = useState(false)
 
+    const handleTabState = (triggerFn, id) => {
+        triggerFn(id)
+        setTabState(prev =>!prev)
+    }
     return (
         <div 
             key={id} 
             className={
-                `sidebar--layer 
+                `layer 
                 ${infoOpened ? "infoOpened": ""}
-                ${active ? "--active": ""}
+                ${active ? "active": ""}
                 `}
             >
-            <div className="sidebar--layer--top">
-                <div className="sidebar--layer--left">
-                    <img className="file-icon" src={fileIcon} />
+            <div className="top">
+                <div className="type--title--container">
+                    <img className="icon" src={fileIcon} />
                     {layerName}
                 </div>
-                <div className="sidebar--icons">
+                <div className="icon--container">
                     <button 
-                        className="sidebar--info--button"
-                        onClick={() => toggleLayers(id)}
-                    >
-                        <img className="sidebar--layer--info--icon" src={infoIcon}/>
-                    </button>
-                    <button 
-                        className="sidebar--view--button"
-                        onClick={() => updateActiveLayers(id)}    
+                        className="view--button"
+                        onClick={() => handleTabState(updateActiveLayers, id)}    
                     >
                         <img 
-                            className={`sidebar--layer--view--icon${active ? "--active" : ""}`}
+                            className={`view--icon ${active ? "active" : ""}`}
                             src={viewIcon}
                         />
-                    </button>
-                    <button
-                        className={`sidebar--zoom-button${active ? "--active" : ""}`}
-                        onClick={() => handleSetIsQueried(fileName, active)}
-                    >
-                        <img className='sidebar--zoom-icon' src={zoomIcon}/>
                     </button>
                 </div> 
             </div>
             {
-            infoOpened &&
-            <div className="sidebar--layer--bottom">
-                info: {info}
+            tabState &&
+            <div className={`bottom`}>
+                <div className="info--container">
+                    info={info}
+                </div>
+
+                <div className="icon--container">
+                    <button 
+                        className="info--button"
+                        onClick={() => toggleLayers(id)}
+                    >
+                        <img className="info--icon" src={infoIcon}/>
+                    </button>
+
+                    <button
+                        className={`zoom--button ${active ? "active" : ""}`}
+                        onClick={() => handleSetIsQueried(fileName, active)}
+                    >
+                        <img className={`zoom--icon ${active ? "active" : ""}`} src={zoomIcon}/>
+                    </button>
+                </div>
             </div> 
             }                         
         </div>

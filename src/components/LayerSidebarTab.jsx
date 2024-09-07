@@ -19,9 +19,6 @@ export default function LayerSidebarTab({
             const infoOpened = layersInfoOpened.includes(layer.id)
             const active = activeLayers.some(activeLayer => activeLayer.id === layer.id)
             return (
-                <div
-                    key={layer.id}
-                >
                     <LayerTab 
                         id={layer.id}
                         layerName={layer.layer_name}
@@ -30,7 +27,6 @@ export default function LayerSidebarTab({
                         infoOpened={infoOpened}
                         active={active}
                     />
-                </div>
             )
         })
     } else {
