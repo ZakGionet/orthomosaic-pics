@@ -18,7 +18,7 @@ export default function ActiveLayerTab({
     index, 
     info
 }) {
-    console.log(`fileName value for rendered activelayer: ${fileName}`)
+    
     const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
 
