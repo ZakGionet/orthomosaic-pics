@@ -14,14 +14,15 @@ export default function ActiveSidebarTab({
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
 
     const activeLayersMap = activeLayers.map((activeLayer, i) => {
-        console.log(activeLayer.name)
+        console.log(`activeLayer mapping for ${activeLayer.file_name}`)
         return (
             <ActiveLayerTab 
                 id={activeLayer.id}
                 key={activeLayer.id}
                 index={i}
                 layerName={activeLayer.layer_name}
-                fileName={activeLayer.file_Name}
+                fileName={activeLayer.file_name}
+                info={activeLayer.info}
             />
         )
     })

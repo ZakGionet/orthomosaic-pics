@@ -3,24 +3,44 @@
 		height: 100%;
 		width: 100%;
 		background-color: #B7B7A2;
-		overflow-x: hidden;
-
+		overflow-y: hidden;
 }
 	.sidebar .header {
+		position: relative;
+		width: 100%;
+		z-index: 100;
 		display: flex;
 		align-items: center;
 		height: 3rem;
 		background-color: #c8c8b7;
 		box-shadow: 0px 5px 6px -6px #9b9b7d;
+	}	
+	.header .button--container {
+		display: flex;
+		align-items: center;
+		height: 3rem;
+		z-index: 1;
 	}
-		.header .button--container {
+		.header .button--overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
 			height: 3rem;
 			width: 3rem;
-			background-color: inherit;
+			background-color: #B7B7A2;
+			opacity: 100%;
+			z-index: 0;
+			transition: translate 0.2s;
+		}
+		.header .button--overlay.panel_0 {
+			translate: 0;
+		}
+		.header .button--overlay.panel_1 {
+			translate: 3rem;
 		}
 		.header .button--container > button {
 			height: 100%;
-			width: 100%;
+			width: 3rem;
 			background-color: inherit;
 			transition: filter 0.4s;
 

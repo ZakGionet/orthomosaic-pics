@@ -19,12 +19,7 @@ export default function LayerTab({
     
     const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
-    const [tabState, setTabState] = useState(false)
 
-    const handleTabState = (triggerFn, id) => {
-        triggerFn(id)
-        setTabState(prev =>!prev)
-    }
     return (
         <div 
             key={id} 
@@ -42,7 +37,7 @@ export default function LayerTab({
                 <div className="icon--container">
                     <button 
                         className="view--button"
-                        onClick={() => handleTabState(updateActiveLayers, id)}    
+                        onClick={() => updateActiveLayers(id)}    
                     >
                         <img 
                             className={`view--icon ${active ? "active" : ""}`}
@@ -52,7 +47,7 @@ export default function LayerTab({
                 </div> 
             </div>
             {
-            tabState &&
+            active &&
             <div className={`bottom`}>
                 <div className="info--container">
                     info={info}

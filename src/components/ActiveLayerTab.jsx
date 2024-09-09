@@ -1,4 +1,4 @@
-import moveIcon from "../assets/move-icon.svg"
+import infoIcon from "../assets/info-icon.svg"
 import viewIcon from "../assets/view-icon.svg"
 import fileIcon from "../assets/file-icon.svg"
 import zoomIcon from "../assets/zoom-icon.svg"
@@ -16,8 +16,9 @@ export default function ActiveLayerTab({
     layerName, 
     fileName,
     index, 
+    info
 }) {
-
+    console.log(`fileName value for rendered activelayer: ${fileName}`)
     const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
     const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
 
@@ -83,40 +84,55 @@ export default function ActiveLayerTab({
     drag(drop(ref))
 
     return (
-        <div 
-            ref={ref}
-            key={id} 
-            data-handler-id={handlerId}
-            className={`sidebar--layer`}
-        >
-            <div className="sidebar--layer--top">
 
-                <div className="sidebar--layer--left">
-                    <img className="file-icon" src={fileIcon} />
-                    {layerName}
+            <div 
+                ref={ref}
+                key={id} 
+                data-handler-id={handlerId}
+                className={`layer active`}
+            >
+                <div className="top">
+                    <div className="type--title--container">
+                        <img className="icon" src={fileIcon} />
+                        {layerName}
+                    </div>
+
+                    <div className="icon--container">
+                        <button 
+                            className="view--button"
+                            onClick={() => updateActiveLayers(id)}    
+                        >
+                            <img 
+                                className={
+                                    `view--icon active`
+                                } 
+                                src={viewIcon}
+                            />
+                        </button>
+                    </div> 
                 </div>
+                <div className={`bottom`}>
+                    <div className="info--container">
+                        info={info}
+                    </div>
 
-                <div className="sidebar--icons">
-                    <button 
-                        className="sidebar--view--button"
-                        onClick={() => updateActiveLayers(id)}    
-                    >
-                        <img 
-                            className={
-                                `sidebar--layer--view--icon--active`
-                            } 
-                            src={viewIcon}
-                        />
-                    </button>
-                    <button
-                        onClick={() => handleSetIsQueried(fileName, true)}
-                    >
-                        <img className='sidebar--zoom-icon' src={zoomIcon}/>
-                    </button>
+                    <div className="icon--container">
+                        <button 
+                            className="info--button"
+                            onClick={() => toggleLayers(id)}
+                        >
+                            <img className="info--icon" src={infoIcon}/>
+                        </button>
+
+                        <button
+                            className={`zoom--button active`}
+                            onClick={() => handleSetIsQueried(fileName, true)}
+                        >
+                            <img className={`zoom--icon active`} src={zoomIcon}/>
+                        </button>
+                    </div>
                 </div> 
-
             </div>  
 
-        </div>
     )
 }

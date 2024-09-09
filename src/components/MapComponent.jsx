@@ -19,7 +19,7 @@ import VectorSource from 'ol/source/Vector';
 import { GeoTIFF } from 'ol/source';
 import XYZ from 'ol/source/XYZ';
 import GeoJSON from "ol/format/GeoJSON.js";
-
+import { easeIn, easeOut } from 'ol/easing.js'
 import { useEffect, useState, useRef, useContext } from "react"
 
 import fetchExtent from '../apis/fetchExtent';
@@ -180,6 +180,9 @@ const MapComponent = ({
         console.log(`queried layer name: ${isQueried.name}`)
         console.log('current extents:')
         console.log(layerExtents)
+
+        // Animation function
+        // https://openlayers.org/en/latest/examples/animation.html
         if (isQueried.name === "") {
             return
         }
@@ -189,8 +192,42 @@ const MapComponent = ({
         if (!layerExtents) {
             return
         }
+        
+        function flyTo(view, extent, done) {
+            const getCenterZoomFromExtent = (extent) => {
+                const center = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2]
+                const resolution = mapState.getView().getResolutionForExtent(extent)
+                const zoom = mapState.getView().getZoomForResolution(resolution)
+                return {center: center, zoom: zoom}
+            }
+            const { center, zoom } = getCenterZoomFromExtent(extent)
+            const duration = 2000;
+            let parts = 2;
+            let called = false;
+            function callback(complete) {
+                --parts;
+                if (called) {
+                    return;
+                }
+                if (parts === 0 || !complete) {
+                    called = true;
+                    done(complete);
+                }
+            }
+            view.animate({
+                center: center,
+                duration: duration,
+            }, callback);
+            view.animate({
+                zoom: zoom - 1,
+                duration: duration / 2,
+            }, {
+                zoom: zoom,
+                duration: duration / 2,
+            }, callback);
+        }
         const extent = layerExtents.filter(layer => layer.name === isQueried.name)[0].extent
-        mapState.getView().fit(extent, mapState.getSize())
+        flyTo(mapState.getView(), extent, () => {})
     }, [isQueried])
 
     useEffect(() => {
@@ -210,7 +247,7 @@ const MapComponent = ({
             const mapLayers = [...mapState.getLayers().getArray()]
             const osmLayer = mapLayers.shift()      // removing the osmlayer from the array
             for (const layer of mapLayers) {
-                const activeLayerIndex = activeLayers.findIndex(activeLayer => activeLayer.name === layer.get('name'))
+                const activeLayerIndex = activeLayers.findIndex(activeLayer => activeLayer.file_name === layer.get('name'))
                 layer.setZIndex(activeLayerIndex + 1)
 
             }
