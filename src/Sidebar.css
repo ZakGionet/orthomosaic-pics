@@ -3,12 +3,13 @@
 		height: 100%;
 		width: 100%;
 		background-color: #B7B7A2;
-		overflow-y: hidden;
+		overflow-y: auto;
+		overflow-x: hidden;
 }
 	.sidebar .header {
-		position: relative;
+		/* position: absolute; */
 		width: 100%;
-		z-index: 100;
+		/* z-index: 100; */
 		display: flex;
 		align-items: center;
 		height: 3rem;
@@ -54,7 +55,7 @@
 			cursor: pointer;
 		}
 	.sidebar .panel--container {
-		height: 100%;
+		height: calc(100% - 3rem);
 		display: grid;
 		width: 200%;
 		grid-template-columns: 1fr 1fr;
@@ -69,10 +70,10 @@
 		}
 		.panel--container > .layers--panel,
 		.panel--container > .activeLayers--panel {
-			overflow-y: scroll;
-			padding-top: 1rem;
-			padding-left: 0.5rem;
-			height: inherit;  
+			height: 100%;
+			overflow-y: auto;
+			/* padding-top: 1rem; */
+			padding-left: 0.5rem; 
 		}
 
 		.sidebar .layer {
