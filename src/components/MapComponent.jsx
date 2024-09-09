@@ -78,7 +78,7 @@ const MapComponent = ({
         setMapState(mapInstance)
 
         /* Interactions */
-        mapInstance.addInteraction(new Link())
+        // mapInstance.addInteraction(new Link())
 
         const rotate = new Rotate()
         mapInstance.addControl(rotate)
