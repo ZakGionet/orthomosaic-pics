@@ -274,7 +274,7 @@ const MapComponent = ({
             return !shortest.some(shortestLayer => shortestLayer.file_name === longestLayer.file_name);
         })[0];
 
-        const handleLayerRemove = (layerArray, fileName, next) => {
+        const handleLayerRemove = (layerArray, fileName) => {
             if (layerArray) {
                 for (const layer of layerArray) {
                     if (layer.get('name') === fileName) {
@@ -283,11 +283,8 @@ const MapComponent = ({
                     }           
                 }
                 setLayerExtents(prevLayerExtents => {
-                    console.log('removing extent')
-                    console.log(prevLayerExtents)
                     let newLayerExtents = []
                     newLayerExtents = prevLayerExtents.filter(layer => layer.name !== fileName)
-                    console.log(newLayerExtents)
                     return newLayerExtents                  
                 })
                 return 0
