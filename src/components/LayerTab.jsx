@@ -35,6 +35,7 @@ export default function LayerTab({
                     {layerName}
                 </div>
                 <div className="icon--container">
+                    {/* <span className="tooltip">Add Layer</span> */}
                     <button 
                         className="view--button"
                         onClick={() => updateActiveLayers(id)}    
@@ -58,6 +59,7 @@ export default function LayerTab({
                         className="info--button"
                         onClick={() => toggleLayers(id)}
                     >
+                        {/* <span className="tooltip">Additional Information</span> */}
                         <img className="info--icon" src={infoIcon}/>
                     </button>
 
@@ -65,6 +67,7 @@ export default function LayerTab({
                         className={`zoom--button ${active ? "active" : ""}`}
                         onClick={() => handleSetIsQueried(fileName, active)}
                     >
+                        {/* <span className="tooltip">Zoom to Layer</span> */}
                         <img className={`zoom--icon ${active ? "active" : ""}`} src={zoomIcon}/>
                     </button>
                 </div>

@@ -68,8 +68,8 @@ const MapComponent = ({
             target: mapRef.current,
             layers: [osmLayer],
             view: new View({
-                center: [-8019943, 5637190],
-                zoom: 22,
+                center: [-8003970, 5666128],
+                zoom: 10,
             })
         })
         console.log(`mapInstance.projection: ${mapInstance.getView().getProjection().getCode()}`)
@@ -243,68 +243,13 @@ const MapComponent = ({
         /* Layer re-ordering, currently goes through ALL active layers */
         if (prevActiveLayers.length === activeLayers.length) {
             console.log('no add/remove')
-            
-            const mapLayers = [...mapState.getLayers().getArray()]
-            const osmLayer = mapLayers.shift()      // removing the osmlayer from the array
-            for (const layer of mapLayers) {
-                const activeLayerIndex = activeLayers.findIndex(activeLayer => activeLayer.file_name === layer.get('name'))
-                layer.setZIndex(activeLayerIndex + 1)
 
+            for (const layer of mapState.getLayers().getArray()) {
+                if (layer.get('name') !== 'osm-layer') {
+                    const activeLayerIndex = activeLayers.findIndex(activeLayer => activeLayer.file_name === layer.get('name'))
+                    layer.setZIndex(activeLayerIndex + 1)
+                }
             }
-            mapState.setLayers([osmLayer, ...mapLayers])    // osmlayer gets readded
-
-            /* Was */
-            // async function ReorderLayers(activeLayers, mapState) {
-            //     for (const layer of activeLayers) {
-            //         if (layer.type === "geojson") {
-            //             try {
-            //                 const fileResponse = await fetch(`./${layer.url}`)
-            //                 console.log(fileResponse)
-            //                 const geoJson = await fileResponse.json();
-        
-            //                 const vectorSource = new VectorSource({
-            //                     features: new GeoJSON().readFeatures(geoJson)
-            //                 })
-            //                 const vectorLayer = new VectorLayer({
-            //                     source: vectorSource,
-            //                     name: layer.name,
-            //                     style: new Style({
-            //                         fill: new Fill({
-            //                             color: layer.fill
-            //                         }),
-            //                         stroke: new Stroke({
-            //                             color: layer.stroke
-            //                         })
-            //                     }),
-            //                 })
-            //                 mapState.addLayer(vectorLayer)
-            //             } catch (error) {
-            //                 console.error(`Error loading layer ${layer.name}`, error)
-            //             } 
-    
-            //         }
-            //         else if (layer.type === "geotiff") {
-            //             const geoTIFFSource = new GeoTIFF({
-            //                 sources: [{
-            //                     url: layer.url,
-            //                     // overviews needs to be in [], this isn't ez to find lol
-            //                     overviews: [`./${layer.url}.ovr`],
-            //                     // gotta figure out how to read the headers properly, for now they are added manually.
-            //                     nodata: -9999, min: 0, max: 217,
-            //                 }]
-            //             })
-            //             const geoTIFFLayer = new webGLTileLayer({
-            //                 source: geoTIFFSource,
-            //                 name: layer.name,
-            //             })
-            //             geoTIFFLayer.setVisible(true)    
-            //             mapState.addLayer(geoTIFFLayer)
-            //         }
-                    
-            //     }
-            // }
-            // ReorderLayers(activeLayers, mapState)
-
             return
         }
 
@@ -329,35 +274,32 @@ const MapComponent = ({
             return !shortest.some(shortestLayer => shortestLayer.file_name === longestLayer.file_name);
         })[0];
 
+        const handleLayerRemove = (layerArray, fileName, next) => {
+            if (layerArray) {
+                for (const layer of layerArray) {
+                    if (layer.get('name') === fileName) {
+                        mapState.removeLayer(layer)
+                        break
+                    }           
+                }
+                setLayerExtents(prevLayerExtents => {
+                    console.log('removing extent')
+                    console.log(prevLayerExtents)
+                    let newLayerExtents = []
+                    newLayerExtents = prevLayerExtents.filter(layer => layer.name !== fileName)
+                    console.log(newLayerExtents)
+                    return newLayerExtents                  
+                })
+                return 0
+            }
+        }
         console.log(`Filtered activeLayers: ${activeLayersChange.file_name}`)
         console.log(activeLayersChange)
         /* Not sure why we're checking if the layers array exists */
         if (mapState.getLayers().getArray()) {
             // unsure if we need to check it this way
             if (removing === true && mapState.getLayers().getArray().length > 1) {        
-                console.log('removing layer...')
-                let layerArray = mapState.getLayers().getArray()
-                layerArray.forEach(layer => {
-                    // This condition is to ignore the osm layer
-                    if (layer.get('name') != 'osm-layer') {
-                        console.log(`layer ${layer.get('name')}:`)
-                        console.log(layer)
-                        if (layer.get('name') === activeLayersChange.file_name) {
-                            console.log(`Found layer '${layer.get('name')}' to remove.`)
-                            mapState.removeLayer(layer)
-                        }
-                    }                
-                })
-                setLayerExtents(prevLayerExtents => {
-                    console.log(`Removing layer extent  ${activeLayersChange.file_name}`)
-                    let newLayerExtents = []
-                    newLayerExtents = prevLayerExtents.filter(layer => layer.name !== activeLayersChange.file_name)
-                    console.log(`new extents array:`)
-                    console.log(newLayerExtents)
-                    return newLayerExtents
-                    
-                })
-
+                handleLayerRemove(mapState.getLayers().getArray(), activeLayersChange.file_name)
             }
             else {
                 let extent 
@@ -368,22 +310,36 @@ const MapComponent = ({
                     extent = handleGeoJSONLayer(activeLayersChange)
                 }
                 else if (activeLayersChange.type === "geotiff") {
-                    const geoTIFFSource = new GeoTIFF({
-                        sources: [{
-                            url: `./${activeLayersChange.url}`,
-                            // overviews needs to be in [], this isn't ez to find lol
-                            overviews: [`./${activeLayersChange.url}.ovr`],
-                            // gotta figure out how to read the headers properly, for now they are added manually.
-                            nodata: -9999, min: 0, max: 217,
-                        }]
-                    })
-                    const geoTIFFLayer = new webGLTileLayer({
-                        source: geoTIFFSource,
-                        name: activeLayersChange.file_name,
-                    })
-                    geoTIFFLayer.setVisible(true)    
-                    geoTIFFLayer.setZIndex(activeLayers.length)
-                    mapState.addLayer(geoTIFFLayer)
+                    try {
+                        const geoTIFFSource = new GeoTIFF({
+                            sources: [{
+                                url: `./${activeLayersChange.url}`,
+                                // overviews needs to be in [], this isn't ez to find lol
+                                overviews: [`./${activeLayersChange.url}.ovr`],
+                                // gotta figure out how to read the headers properly, for now they are added manually.
+                                nodata: -9999, min: 0, max: 217,
+                            }]
+                        })
+                        const checkSourceError = async (sourceObject) => {
+                            return sourceObject.getState() === 'error'
+                        }
+                        console.log('geotiff state:')
+                        console.log(geoTIFFSource.getState())
+                        if (checkSourceError(geoTIFFSource)) {
+                            console.log(`layer ${activeLayersChange.file_name} source error.`)
+                        }
+                        else {
+                            const geoTIFFLayer = new webGLTileLayer({
+                                source: geoTIFFSource,
+                                name: activeLayersChange.file_name,
+                            })
+                            geoTIFFLayer.setVisible(true)    
+                            geoTIFFLayer.setZIndex(activeLayers.length)
+                            mapState.addLayer(geoTIFFLayer)
+                        }
+                    } catch (error) {
+                        console.error(error)
+                    }
                 }
                 else if (activeLayersChange.type === 'raster') {
                     extent = handleTileBuild(activeLayersChange)

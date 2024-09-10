@@ -14,10 +14,13 @@ button {
   border: none;
 }
 .map {
+  position: fixed;
   flex: 1;
   z-index: 100;
-  height: 100vh;
-  width: 100vh;
+  height: 100%;
+  width: 100%;
+  /* height: 100vh; */
+  /* width: 100vw; */
   padding: 0;
   margin: 0;
 }.map:hover {

@@ -19,7 +19,8 @@ export default function SidebarHeader( {currentTab, setCurrentTab} ) {
                 <button
                     className={``}
                     onClick={() => setCurrentTab("allLayers")}
-                >
+                >   
+                    <span className="tooltip">Catalogue</span>
                     <img className="icon" src={directoryIcon}/>
                 </button>
 
@@ -28,6 +29,7 @@ export default function SidebarHeader( {currentTab, setCurrentTab} ) {
                     className={``}
                     onClick={() => setCurrentTab("activeLayers")}
                 >
+                    <span className="tooltip">Active Layers</span>
                     <img className="icon" src={viewIcon}/>
                 </button>
             </div>
