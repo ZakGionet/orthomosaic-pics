@@ -26,14 +26,6 @@ export default function Sidebar({
     }
     const panelClass = 'panel_' + parseInt(panel)
 
-        // ${currentTab !== "allLayers" 
-        //     ?
-        // "hidden-sidebar": ""}
-
-
-        // ${currentTab !== "activeLayers" 
-        //     ?
-        // "hidden-sidebar": ""}
     return (
         <div
             className="sidebar"
@@ -44,19 +36,11 @@ export default function Sidebar({
             />
             <div className={`panel--container ${panelClass}`}> 
                 <LayerSidebarTab 
-                    className={
-                        `layers--panel 
-
-                        `
-                    }
+                    className={`layers--panel`}
                     layersInfoOpened={layersInfoOpened}
                 />
                 <ActiveSidebarTab 
-                    className={
-                        `activeLayers--panel 
-
-                        `
-                    }
+                    className={`activeLayers--panel`}
                 />
             </div>
         </div>

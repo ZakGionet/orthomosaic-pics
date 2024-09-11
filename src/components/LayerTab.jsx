@@ -5,8 +5,8 @@ import zoomIcon from "../assets/zoom-icon.svg"
 import "../Sidebar.css"
 // import handleZoomToExtent from "../helpers/handleZoomToExtent"
 
-import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
-import { useContext, useState } from "react"
+import { QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
+import { useContext } from "react"
 
 export default function LayerTab({
     id, 
@@ -17,8 +17,8 @@ export default function LayerTab({
     active, 
 }) {
     
-    const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
-    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    const { updateActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
+    const { handleSetIsQueried } = useContext(QueriedContext)
 
     return (
         <div 

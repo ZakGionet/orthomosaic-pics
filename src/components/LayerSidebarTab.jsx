@@ -1,7 +1,7 @@
 import LayerTab from "./LayerTab"
 import "../Sidebar.css"
 
-import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
+import { LayersContext, ActiveLayersContext } from "../contexts/Contexts"
 import { useContext } from "react"
 
 export default function LayerSidebarTab({
@@ -10,8 +10,7 @@ export default function LayerSidebarTab({
     }) {
     
     const layers = useContext(LayersContext)
-    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
-    const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
+    const { activeLayers } = useContext(ActiveLayersContext)
 
     let layersMap
     if (layers) {

@@ -1,46 +1,39 @@
 import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import View from 'ol/View.js';
-import Link from 'ol/interaction/Link';
-import {Style, Fill, Stroke} from 'ol/style';
+
 import ScaleLine from 'ol/control/ScaleLine'
-import ZoomToExtent from 'ol/control/ZoomToExtent.js'
+
 import Rotate from 'ol/control/Rotate.js'
 import MousePosition from 'ol/control/MousePosition.js'
-import Zoom from 'ol/control/Zoom.js'
+
 
 import 'ol/ol.css';
-import LayerGroup from 'ol/layer/Group';
 
 import TileLayer from 'ol/layer/Tile.js';
-import webGLTileLayer from 'ol/layer/WebGLTile.js'
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { GeoTIFF } from 'ol/source';
-import XYZ from 'ol/source/XYZ';
-import GeoJSON from "ol/format/GeoJSON.js";
-import { easeIn, easeOut } from 'ol/easing.js'
+
 import { useEffect, useState, useRef, useContext } from "react"
 
-import fetchExtent from '../apis/fetchExtent';
+import flyTo from '../zoom_animations/flyTo';
+import reorderLayers from '../layer_logic/reorderLayers';
+import handleTileBuild from '../layer_logic/handleTileBuild'
+import handleGeoTIFF from '../layer_logic/handleGeoTIFF';
+import handleAddLayerExtents from '../layer_logic/handleAddLayerExtents';
+import handleLayerRemove from '../layer_logic/handleLayerRemove';
+import handleGeoJSONLayer from '../layer_logic/handleGeoJSONLayer';
 
 import { ActiveLayersContext, QueriedContext } from '../contexts/Contexts';
+import buildLogicVariables from '../layer_logic/buildLogicVariables';
 
-const MapComponent = ({ 
-        // activeLayers, 
-        // isQueried 
-    }) => {
+const MapComponent = () => {
 
     // Contexts
-    const {activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers} = useContext(ActiveLayersContext)
-    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    const { activeLayers } = useContext(ActiveLayersContext)
+    const { isQueried } = useContext(QueriedContext)
 
-    console.log('re-rendering')
-    console.log(activeLayers)
     const mapRef = useRef(null)
     const [mapState, setMapState] = useState(null)
     const [prevActiveLayers, setPrevActiveLayers] = useState(activeLayers)
-    const setViewRef = useRef(null)
     const [layerExtents, setLayerExtents] = useState(null)
 
     /* Creates Map instance after component is mounted */
@@ -50,20 +43,7 @@ const MapComponent = ({
         const osmLayer = new TileLayer({
             source: new OSM()
         })
-        osmLayer.setProperties({"name": "osm-layer"})   // Using this to target osm layer later
-
-        /* 
-            This is just a test for implementing GeoTIFF's!
-            In Qgis, use warp(reproject) to transform the crs of the tif.
-            export -> save as -> 
-                options -> add TILED = YES
-                pyramids -> add to desired precision (gotta figure this out properly)
-
-            To add/remove geotiff layers, have to revisit how the current mechanism works, as the layers are different.
-            This might be as easy as checking if the layer is of a certain type.
-            We also have to add an edge-case for OSM.
-        
-        /* Create a map object */
+        osmLayer.setProperties({"name": "osm-layer"})
         const mapInstance = new Map({
             target: mapRef.current,
             layers: [osmLayer],
@@ -72,14 +52,11 @@ const MapComponent = ({
                 zoom: 10,
             })
         })
-        console.log(`mapInstance.projection: ${mapInstance.getView().getProjection().getCode()}`)
-        
+
         /* Maintain a state containing the map */
         setMapState(mapInstance)
 
         /* Interactions */
-        // mapInstance.addInteraction(new Link())
-
         const rotate = new Rotate()
         mapInstance.addControl(rotate)
         
@@ -96,284 +73,60 @@ const MapComponent = ({
 
     }, [])
 
-    // Handling setLayerExtents
-    const handleSetLayerExtents = (layerName) => {
-
-    }
-
-    // Helper function to export view functions
-    setViewRef.current = (extent) => {
-        if (mapState) {
-            mapState.setView(new View({
-                extent: extent
-            }))
-        }
-    }
-
-
-    // Helper functions for handling tile layers layers
-    
-    const buildTileLayer = (extentMeters, activeLayersChange) => {
-        const layerGroup = new LayerGroup({
-            name: activeLayersChange.file_name,
-            layers: [
-                new TileLayer({
-                    name: activeLayersChange.file_name,
-                    extent: extentMeters,
-                    source: new XYZ({
-                        minZoom: 0,
-                        maxZoom: 21,
-                        url: `http://localhost:8000/api/raster/${activeLayersChange.file_name}/{z}/{x}/{-y}.png`,
-                        tileSize: [256, 256]
-                    })
-                })
-            ]
-        })
-        console.log('layer group debugging:')
-        layerGroup.setVisible(true)
-        layerGroup.setZIndex(activeLayers.length)
-        mapState.addLayer(layerGroup)
-        
-    }
-    const handleTileBuild = async (activeLayersChange) => {
-        const extentMeters = await fetchExtent(activeLayersChange.file_name)
-        console.log('running handleTileBuild')
-        console.log(extentMeters)
-        buildTileLayer(extentMeters, activeLayersChange)
-        return extentMeters
-    }
-    // Handles adding geojsons
-    const handleGeoJSONLayer = async(activeLayersChange) => {
-        console.log('handling geojson fetch')
-        console.log(activeLayersChange)
-        let parsedName = activeLayersChange.file_name.toLowerCase()
-        parsedName = parsedName.replaceAll(' ', '_')
-        parsedName = parsedName.replaceAll('-', '_')
-        const fileResponse = await fetch(`http://localhost:8000/api/geojson/${parsedName}`);
-        console.log(fileResponse)
-        const geoJson = await fileResponse.json();
-        console.log(geoJson)
-        console.log(geoJson['json_build_object'])
-
-        const vectorSource = new VectorSource({
-            features: new GeoJSON().readFeatures(geoJson['json_build_object'])
-        })
-        // handle adding extent to state
-        const vectorLayer = new VectorLayer({
-            source: vectorSource,
-            name: activeLayersChange.file_name,
-            style: new Style({
-                fill: new Fill({
-                    color: activeLayersChange.fill
-                }),
-                stroke: new Stroke({
-                    color: activeLayersChange.stroke
-                })
-            }),
-        })
-        vectorLayer.setZIndex(activeLayers.length)
-        mapState.addLayer(vectorLayer)
-        return vectorSource.getExtent()
-    }
+    // Handling zoom to layer
     useEffect(() => {
-        console.log('Starting zoom query')
-        console.log(`queried layer name: ${isQueried.name}`)
-        console.log('current extents:')
-        console.log(layerExtents)
-
-        // Animation function
-        // https://openlayers.org/en/latest/examples/animation.html
-        if (isQueried.name === "") {
+        if (isQueried.name === "" || !mapState || !layerExtents) {
             return
-        }
-        if (!mapState) {
-            return
-        }
-        if (!layerExtents) {
-            return
-        }
-        
-        function flyTo(view, extent, done) {
-            const getCenterZoomFromExtent = (extent) => {
-                const center = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2]
-                const resolution = mapState.getView().getResolutionForExtent(extent)
-                const zoom = mapState.getView().getZoomForResolution(resolution)
-                return {center: center, zoom: zoom}
-            }
-            const { center, zoom } = getCenterZoomFromExtent(extent)
-            const duration = 2000;
-            let parts = 2;
-            let called = false;
-            function callback(complete) {
-                --parts;
-                if (called) {
-                    return;
-                }
-                if (parts === 0 || !complete) {
-                    called = true;
-                    done(complete);
-                }
-            }
-            view.animate({
-                center: center,
-                duration: duration,
-            }, callback);
-            view.animate({
-                zoom: zoom - 1,
-                duration: duration / 2,
-            }, {
-                zoom: zoom,
-                duration: duration / 2,
-            }, callback);
         }
         const extent = layerExtents.filter(layer => layer.name === isQueried.name)[0].extent
         flyTo(mapState.getView(), extent, () => {})
     }, [isQueried])
 
+    // Handling layer add/remove/reorder
     useEffect(() => {
         /* Make sure map is properly mounted, not sure why we're doing this */
-        if (!mapState) {
+        if (!mapState || prevActiveLayers.length === 0 && activeLayers.length === 0) {
             return
         }
-        /* Makes sure this isn't executed without layers. */
-        if (prevActiveLayers.length === 0 && activeLayers.length === 0) {
-            console.log('no active layers or layer changes (map initialized)')
-            return
-        }
-        /* Layer re-ordering, currently goes through ALL active layers */
+
+        /* REORDERING LAYERS */
         if (prevActiveLayers.length === activeLayers.length) {
-            console.log('no add/remove')
-
-            for (const layer of mapState.getLayers().getArray()) {
-                if (layer.get('name') !== 'osm-layer') {
-                    const activeLayerIndex = activeLayers.findIndex(activeLayer => activeLayer.file_name === layer.get('name'))
-                    layer.setZIndex(activeLayerIndex + 1)
-                }
-            }
+            reorderLayers(mapState.getLayers().getArray(), activeLayers)
             return
         }
 
-        /* Layer added or removed */
-        let longest = []
-        let shortest = []
-        let removing = false
+        const { removing, activeLayersChange } = buildLogicVariables(prevActiveLayers, activeLayers)
 
-        if (prevActiveLayers.length > activeLayers.length) {
-            longest = [...prevActiveLayers]
-            shortest = [...activeLayers]
-            removing = true
-        }
-        else {
-            longest = [...activeLayers]
-            shortest = [...prevActiveLayers]
-            removing = false
-        }
-
-        /* Is assigned the element which is in one layer and not the other */
-        let activeLayersChange = longest.filter(longestLayer => {
-            return !shortest.some(shortestLayer => shortestLayer.file_name === longestLayer.file_name);
-        })[0];
-
-        const handleLayerRemove = (layerArray, fileName) => {
-            if (layerArray) {
-                for (const layer of layerArray) {
-                    if (layer.get('name') === fileName) {
-                        mapState.removeLayer(layer)
-                        break
-                    }           
-                }
-                setLayerExtents(prevLayerExtents => {
-                    let newLayerExtents = []
-                    newLayerExtents = prevLayerExtents.filter(layer => layer.name !== fileName)
-                    return newLayerExtents                  
-                })
-                return 0
-            }
-        }
-        console.log(`Filtered activeLayers: ${activeLayersChange.file_name}`)
-        console.log(activeLayersChange)
-        /* Not sure why we're checking if the layers array exists */
         if (mapState.getLayers().getArray()) {
-            // unsure if we need to check it this way
+
+            /* REMOVING LAYERS */
             if (removing === true && mapState.getLayers().getArray().length > 1) {        
-                handleLayerRemove(mapState.getLayers().getArray(), activeLayersChange.file_name)
+                handleLayerRemove(mapState, activeLayersChange.file_name, setLayerExtents)
             }
+
+            /* ADDING LAYERS */
             else {
                 let extent 
-                console.log('adding layer...')
                 if (activeLayersChange.type === "geojson") {
-                    console.log('adding geojson')
-                    console.log(activeLayersChange.file_name)
-                    extent = handleGeoJSONLayer(activeLayersChange)
-                }
-                else if (activeLayersChange.type === "geotiff") {
-                    try {
-                        const geoTIFFSource = new GeoTIFF({
-                            sources: [{
-                                url: `./${activeLayersChange.url}`,
-                                // overviews needs to be in [], this isn't ez to find lol
-                                overviews: [`./${activeLayersChange.url}.ovr`],
-                                // gotta figure out how to read the headers properly, for now they are added manually.
-                                nodata: -9999, min: 0, max: 217,
-                            }]
-                        })
-                        const checkSourceError = async (sourceObject) => {
-                            return sourceObject.getState() === 'error'
-                        }
-                        console.log('geotiff state:')
-                        console.log(geoTIFFSource.getState())
-                        if (checkSourceError(geoTIFFSource)) {
-                            console.log(`layer ${activeLayersChange.file_name} source error.`)
-                        }
-                        else {
-                            const geoTIFFLayer = new webGLTileLayer({
-                                source: geoTIFFSource,
-                                name: activeLayersChange.file_name,
-                            })
-                            geoTIFFLayer.setVisible(true)    
-                            geoTIFFLayer.setZIndex(activeLayers.length)
-                            mapState.addLayer(geoTIFFLayer)
-                        }
-                    } catch (error) {
-                        console.error(error)
-                    }
+                    extent = handleGeoJSONLayer(activeLayersChange, activeLayers.length, mapState)
                 }
                 else if (activeLayersChange.type === 'raster') {
-                    extent = handleTileBuild(activeLayersChange)
-                    console.log('success running buildTileLayer')
+                    extent = handleTileBuild(activeLayers.length, activeLayersChange.file_name, mapState)
 
                 }
-                const handleAddLayerExtents = async (layerName, extent) => {
-                    extent = await extent
-                    console.log('handling AddLayerExtent')
-                    console.log(extent)
-                    setLayerExtents((prevLayerExtents) => {
-                        if (prevLayerExtents) {
-                            let newLayerExtents = [...prevLayerExtents]
-                            newLayerExtents.push({name: layerName, extent: extent})
-                            console.log('pushed new extent')
-                            console.log(newLayerExtents)
-                            return newLayerExtents
-                        }
-                        else {
-                            return [{name: layerName, extent: extent}]
-                        }
-                    })
+                else if (activeLayersChange.type === "geotiff") {
+                    console.log(`Geotiff not currently supported`)
+                    return 
+                    handleGeoTIFF()
                 }
-                handleAddLayerExtents(activeLayersChange.file_name, extent)
-                console.log('layerExtents:')
-                console.log(layerExtents)
-                
+                handleAddLayerExtents(activeLayersChange.file_name, extent, setLayerExtents)
             }
         }
         setPrevActiveLayers(activeLayers)
-
-        console.log(mapState.getLayers().getArray())
     }, [activeLayers])
 
     return (
         <div ref={mapRef} className='map'></div>
     )
 }
-
 export default MapComponent

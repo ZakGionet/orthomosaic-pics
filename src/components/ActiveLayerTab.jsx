@@ -7,7 +7,7 @@ import "../Sidebar.css"
 import { useDrag, useDrop } from "react-dnd"
 import { useRef, useEffect } from 'react'
 
-import { LayersContext, QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
+import { QueriedContext, ActiveLayersContext } from "../contexts/Contexts"
 
 import { useContext } from "react"
 
@@ -19,8 +19,8 @@ export default function ActiveLayerTab({
     info
 }) {
     
-    const { activeLayers, updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
-    const { isQueried, handleSetIsQueried } = useContext(QueriedContext)
+    const { updateActiveLayers, rearrangeActiveLayers, toggleLayers } = useContext(ActiveLayersContext)
+    const { handleSetIsQueried } = useContext(QueriedContext)
 
     // See https://react-dnd.github.io/react-dnd/examples/sortable/simple
     const ref = useRef(null)
